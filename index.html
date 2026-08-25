@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+  <html lang="es">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vendimia — Control Previo de Maduración</title>
+
+  <!--
+    ============================================================================
+    CONFIGURACIÓN — rellena estos dos valores con los de tu proyecto Supabase
+  (Project Settings → API → Project URL / anon public key). Son seguros de
+  tener aquí, a la vista: la protección real de los datos la hace la base de
+  datos (Row Level Security), no el que esta clave esté oculta.
+  ============================================================================
+-->
+  <script>
+    window.SUPABASE_URL = "https://ubapqtuvpnotacjzwcrg.supabase.co";
+  window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InViYXBxdHV2cG5vdGFjanp3Y3JnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2NTI1NDQsImV4cCI6MjEwMzIyODU0NH0.pDk7tU7cWkzcUreZ0ECS0eniM_Au-qXaY9fCZAH5xEQ";
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+  <style>
+    :root{
+      --vino:#6b1e2b;
+    --vino-dark:#4a1420;
+    --vino-light:#f4e9ea;
+          --bg:#faf8f6;
+          --card:#ffffff;
+          --texto:#2b2523;
+    --texto-suave:#6b625d;
+    --borde:#e3dcd8;
+          --ok:#3d7a4a;
+    --warn:#b8862c;
+          --bad:#a5333a;
+      }
+  *{box-sizing:border-box;}
+  body{
+        margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--texto);
+    padding:0 0 60px 0;
+}
+  header{
+        background:linear-gradient(135deg,var(--vino) 0%,var(--vino-dark) 100%);
+    color:#fff;
+        padding:24px 20px 20px;
+}
+  header .top-row{
+        display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    flex-wrap:wrap;
+    gap:10px;
+}
+  header h1{margin:0 0 4px;font-size:1.4rem;font-weight:700;}
+  header p{margin:0;opacity:.9;font-size:.9rem;}
+  .user-box{font-size:.8rem;text-align:right;opacity:.95;}
+  .user-box button{
+        margin-top:4px;
+    background:rgba(255,255,255,.15);
+    border:1px solid rgba(255,255,255,.4);
+    color:#fff;
+        padding:4px 10px;
+    border-radius:6px;
+    font-size:.75rem;
+    cursor:pointer;
+}
+  .roadmap{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;}
+  .pill{font-size:.72rem;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);}
+  .pill.activa{background:#fff;color:var(--vino-dark);font-weight:700;border-color:#fff;}
+    .wrap{max-width:900px;margin:0 auto;padding:0 16px;}
+  .card{background:var(--card);border:1px solid var(--borde);border-radius:14px;padding:20px;margin-top:20px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  .card h2{margin:0 0 14px;font-size:1.05rem;color:var(--vino-dark);}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px 14px;}
+  label{display:block;font-size:.78rem;font-weight:600;color:var(--texto-suave);margin-bottom:4px;}
+  input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--borde);border-radius:8px;font-size:.95rem;font-family:inherit;background:#fff;color:var(--texto);}
+    input:focus,select:focus,textarea:focus{outline:2px solid var(--vino);outline-offset:1px;}
+  textarea{resize:vertical;min-height:50px;}
+  .full{grid-column:1/-1;}
+  .actions{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+  button{font-family:inherit;font-size:.9rem;font-weight:600;padding:10px 18px;border-radius:8px;border:1px solid transparent;cursor:pointer;}
+  .btn-primary{background:var(--vino);color:#fff;}
+    .btn-primary:hover{background:var(--vino-dark);}
+  .btn-secondary{background:#fff;color:var(--vino);border-color:var(--vino);}
+      .btn-secondary:hover{background:var(--vino-light);}
+  .btn-ghost{background:transparent;color:var(--texto-suave);border-color:var(--borde);}
+  .btn-ghost:hover{background:#f0ece9;}
+    .toolbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;}
+  .estado-count{font-size:.82rem;color:var(--texto-suave);}
+  table{width:100%;border-collapse:collapse;font-size:.86rem;}
+  th,td{text-align:left;padding:8px 8px;border-bottom:1px solid var(--borde);white-space:nowrap;}
+  th{color:var(--texto-suave);font-weight:600;font-size:.75rem;text-transform:uppercase;letter-spacing:.02em;}
+  tbody tr:hover{background:var(--vino-light);}
+  .table-scroll{overflow-x:auto;}
+  .badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.72rem;font-weight:700;}
+  .badge-bueno{background:#e4f2e6;color:var(--ok);}
+      .badge-regular{background:#fbf1de;color:var(--warn);}
+      .badge-podredumbre{background:#fbe6e6;color:var(--bad);}
+      .row-actions button{padding:5px 9px;font-size:.78rem;margin-right:4px;}
+      .empty{text-align:center;color:var(--texto-suave);padding:30px 10px;font-size:.9rem;}
+  .save-status{font-size:.78rem;color:var(--ok);display:flex;align-items:center;gap:6px;}
+  .save-status.saving{color:var(--warn);}
+  .save-status.error{color:var(--bad);}
+  .hint{font-size:.8rem;color:var(--texto-suave);margin-top:8px;line-height:1.5;}
+  details summary{cursor:pointer;font-weight:600;color:var(--vino);font-size:.88rem;}
+  details[open] summary{margin-bottom:10px;}
+      .roadmap-list{margin:0;padding-left:18px;font-size:.85rem;color:var(--texto-suave);line-height:1.7;}
+  input[type=file]{display:none;}
+
+  /* Pantalla de acceso */
+  #pantalla-auth{
+    max-width:380px;
+    margin:60px auto;
+    padding:0 16px;
+}
+  #pantalla-auth .card{margin-top:0;}
+  .auth-tabs{display:flex;gap:8px;margin-bottom:16px;}
+  .auth-tabs button{flex:1;background:#fff;color:var(--texto-suave);border-color:var(--borde);}
+    .auth-tabs button.activo{background:var(--vino);color:#fff;border-color:var(--vino);}
+    .auth-msg{font-size:.82rem;margin-top:10px;padding:8px 10px;border-radius:8px;}
+  .auth-msg.error{background:#fbe6e6;color:var(--bad);}
+    .auth-msg.ok{background:#e4f2e6;color:var(--ok);}
+    .oculto{display:none !important;}
+  @media (max-width:600px){header h1{font-size:1.2rem;}.card{padding:16px;}}
+</style>
+  </head>
+  <body>
+
+  <!-- ============================= PANTALLA DE ACCESO ============================= -->
+  <div id="pantalla-auth" class="oculto">
+    <div class="card">
+      <h2 style="text-align:center;">🍇 Vendimia</h2>
+      <div class="auth-tabs">
+        <button type="button" id="tab-login" class="activo">Entrar</button>
+        <button type="button" id="tab-signup">Crear cuenta</button>
+      </div>
+      <form id="form-auth">
+        <label for="auth-email">Email</label>
+        <input type="email" id="auth-email" required autocomplete="username">
+        <div style="height:10px;"></div>
+        <label for="auth-password">Contraseña</label>
+        <input type="password" id="auth-password" required autocomplete="current-password" minlength="6">
+        <div class="actions">
+          <button type="submit" class="btn-primary full" id="btn-auth-submit" style="width:100%;">Entrar</button>
+        </div>
+      </form>
+      <div id="auth-msg" class="auth-msg oculto"></div>
+    </div>
+  </div>
+
+  <!-- ==================== PANTALLA "CREAR TU BODEGA" (primera vez) ==================== -->
+  <div id="pantalla-crear-org" class="oculto" style="max-width:380px;margin:60px auto;padding:0 16px;">
+    <div class="card">
+      <h2>Un último paso</h2>
+    <p class="hint">Dale un nombre a tu bodega. Esto agrupará todos tus datos y te permitirá, en el futuro, dar acceso a otras personas de tu equipo (o, si algún día vendes esta app, mantener separados los datos de cada bodega cliente).</p>
+    <form id="form-crear-org">
+        <label for="nombre-org">Nombre de tu bodega</label>
+        <input type="text" id="nombre-org" placeholder="Ej. Bodega Belén" required>
+        <div class="actions">
+          <button type="submit" class="btn-primary">Continuar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================= APP PRINCIPAL ============================= -->
+  <div id="app" class="oculto">
+
+    <header>
+      <div class="wrap">
+        <div class="top-row">
+          <div>
+            <h1>🍇 Control Previo de Maduración</h1>
+          <p>Módulo 1 de tu app de trazabilidad de vendimia — en la nube, accesible desde cualquier dispositivo.</p>
+          </div>
+          <div class="user-box">
+            <div id="user-org-nombre"></div>
+            <div id="user-email"></div>
+            <button type="button" id="btn-logout">Salir</button>
+          </div>
+        </div>
+        <div class="roadmap">
+          <span class="pill activa">1. Control previo</span>
+          <span class="pill">2. Vendimia</span>
+          <span class="pill">3. Bodega / Fermentación</span>
+          <span class="pill">4. Análisis químicos</span>
+          <span class="pill">5. Venta / Trazabilidad</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="wrap">
+
+      <div class="card">
+        <h2>Nueva muestra</h2>
+        <form id="form-muestra">
+          <div class="grid">
+            <div><label for="fecha">Fecha</label><input type="date" id="fecha" required></div>
+            <div><label for="parcela">Parcela / Lote</label><input type="text" id="parcela" placeholder="Ej. La Solana" required></div>
+            <div><label for="variedad">Variedad</label><input type="text" id="variedad" placeholder="Ej. Tempranillo" required></div>
+            <div><label for="muestra">Nº de muestra</label><input type="text" id="muestra" placeholder="Ej. M-01"></div>
+            <div><label for="baume">Grado Baumé (°Bé)</label><input type="number" step="0.1" id="baume" placeholder="Ej. 12.5"></div>
+            <div><label for="brix">°Brix</label><input type="number" step="0.1" id="brix" placeholder="Ej. 22.0"></div>
+            <div><label for="acidez">Acidez total (g/L ác. tartárico)</label><input type="number" step="0.1" id="acidez" placeholder="Ej. 6.2"></div>
+            <div><label for="ph">pH</label><input type="number" step="0.01" id="ph" placeholder="Ej. 3.35"></div>
+            <div><label for="peso100">Peso de 100 bayas (g)</label><input type="number" step="1" id="peso100" placeholder="Ej. 180"></div>
+            <div>
+              <label for="estado">Estado sanitario</label>
+              <select id="estado">
+                <option value="Bueno">Bueno</option>
+                <option value="Regular">Regular</option>
+                <option value="Con podredumbre">Con podredumbre</option>
+              </select>
+            </div>
+            <div><label for="ipt">IPT (polifenoles, opcional)</label><input type="number" step="0.1" id="ipt" placeholder="Ej. 45"></div>
+            <div><label for="antocianos">Antocianos mg/L (opcional)</label><input type="number" step="1" id="antocianos" placeholder="Ej. 850"></div>
+            <div><label for="responsable">Responsable</label><input type="text" id="responsable" placeholder="Ej. Belén"></div>
+            <div class="full"><label for="observaciones">Observaciones</label><textarea id="observaciones" placeholder="Notas de campo, climatología, incidencias..."></textarea></div>
+          </div>
+          <div class="actions">
+            <button type="submit" class="btn-primary" id="btn-guardar">＋ Añadir muestra</button>
+            <button type="button" class="btn-ghost" id="btn-cancelar-edicion" style="display:none;">Cancelar edición</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="toolbar">
+          <h2 style="margin:0;">Registros</h2>
+          <span class="estado-count" id="contador">Cargando…</span>
+        </div>
+        <div class="actions" style="margin-top:0;margin-bottom:14px;">
+          <button type="button" class="btn-secondary" id="btn-refrescar">🔄 Actualizar</button>
+          <button type="button" class="btn-secondary" id="btn-exportar">⬇ Exportar a Excel/CSV</button>
+          <button type="button" class="btn-secondary" id="btn-importar-trigger">⬆ Importar desde Excel/CSV</button>
+          <input type="file" id="btn-importar" accept=".csv">
+          <span class="save-status" id="save-status">✓ Sincronizado</span>
+        </div>
+        <div class="table-scroll">
+          <table id="tabla-muestras">
+            <thead>
+              <tr>
+                <th>Fecha</th><th>Parcela/Lote</th><th>Variedad</th><th>Muestra</th><th>°Bé</th><th>°Brix</th>
+                <th>Acidez</th><th>pH</th><th>100 bayas (g)</th><th>Estado</th><th>IPT</th><th>Antocianos</th>
+                <th>Responsable</th><th>Obs.</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="tbody-muestras"></tbody>
+          </table>
+          <div class="empty" id="empty-msg">Todavía no has añadido ninguna muestra. Rellena el formulario de arriba para empezar.</div>
+      </div>
+      <p class="hint">
+          Los datos viven en la nube: puedes entrar desde el móvil en el viñedo, desde el ordenador de la oficina o
+        desde cualquier sitio con internet, y siempre verás lo mismo. Aun así, «Exportar a Excel/CSV» te sigue
+        dando una copia tuya para tus propias auditorías o para guardar offline.
+      </p>
+    </div>
+
+    <div class="card">
+        <details>
+          <summary>Sobre esta app y los próximos módulos</summary>
+        <p class="hint" style="margin-top:10px;">
+          El código de esta app es tuyo: vive en tu propia cuenta de GitHub y tu propia base de datos en Supabase,
+          no depende de ninguna suscripción a una IA. Si en el futuro quieres adaptarla y ofrecerla a otras
+          bodegas, la estructura de datos ya está preparada para eso (cada bodega tiene sus datos completamente
+          separados de las demás).
+          </p>
+          <p class="hint" style="margin-top:6px;"><strong>Hoja de ruta prevista:</strong></p>
+          <ol class="roadmap-list">
+            <li><strong>Control previo de maduración</strong> (este módulo)</li>
+            <li>Vendimia: fecha de recolección, kg recogidos, parcela, cuadrilla, transporte</li>
+            <li>Bodega / Fermentación: nº de depósito, temperaturas, densidades, trasiegos</li>
+            <li>Análisis químicos: seguimiento analítico completo por lote</li>
+            <li>Venta / Trazabilidad: lote embotellado → cliente, con historial completo desde la viña</li>
+        </ol>
+      </details>
+    </div>
+
+  </div>
+</div>
+
+  <script>
+  (function(){
+    "use strict";
+
+  if(!window.supabase){
+    document.body.innerHTML = "<p style='padding:40px;font-family:sans-serif;'>No se pudo cargar la librería de Supabase. Comprueba tu conexión a internet y recarga la página.</p>";
+    return;
+  }
+
+  var TABLA = "control_previo_maduracion";
+  var campos = ["fecha","parcela","variedad","muestra","baume","brix","acidez","ph","peso100","estado","ipt","antocianos","responsable","observaciones"];
+  // Los nombres de columna en la base de datos usan snake_case en un par de casos distintos al id del input
+  var campoAColumna = {
+    fecha:"fecha", parcela:"parcela", variedad:"variedad", muestra:"muestra",
+        baume:"baume", brix:"brix", acidez:"acidez", ph:"ph", peso100:"peso_100_bayas",
+        estado:"estado_sanitario", ipt:"ipt", antocianos:"antocianos",
+        responsable:"responsable", observaciones:"observaciones"
+    };
+  var etiquetas = {
+    fecha:"Fecha", parcela:"Parcela/Lote", variedad:"Variedad", muestra:"Nº muestra",
+        baume:"Grado Baumé", brix:"Brix", acidez:"Acidez total (g/L)", ph:"pH",
+        peso100:"Peso 100 bayas (g)", estado:"Estado sanitario", ipt:"IPT",
+        antocianos:"Antocianos (mg/L)", responsable:"Responsable", observaciones:"Observaciones"
+    };
+
+  var sb = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+
+  var datos = [];
+  var editandoId = null;
+  var organizacionId = null;
+
+  var pantallaAuth = document.getElementById("pantalla-auth");
+  var pantallaCrearOrg = document.getElementById("pantalla-crear-org");
+  var appEl = document.getElementById("app");
+
+  function mostrarSolo(el){
+        [pantallaAuth, pantallaCrearOrg, appEl].forEach(function(e){ e.classList.add("oculto"); });
+    el.classList.remove("oculto");
+  }
+
+  // ---------------------------------------------------------------------
+  // AUTENTICACIÓN
+  // ---------------------------------------------------------------------
+  var modoAuth = "login"; // o "signup"
+  var tabLogin = document.getElementById("tab-login");
+  var tabSignup = document.getElementById("tab-signup");
+  var formAuth = document.getElementById("form-auth");
+  var btnAuthSubmit = document.getElementById("btn-auth-submit");
+  var authMsg = document.getElementById("auth-msg");
+
+  function setModoAuth(m){
+        modoAuth = m;
+    tabLogin.classList.toggle("activo", m === "login");
+    tabSignup.classList.toggle("activo", m === "signup");
+    btnAuthSubmit.textContent = m === "login" ? "Entrar" : "Crear cuenta";
+    authMsg.classList.add("oculto");
+  }
+  tabLogin.addEventListener("click", function(){ setModoAuth("login"); });
+  tabSignup.addEventListener("click", function(){ setModoAuth("signup"); });
+
+  function mostrarAuthMsg(texto, tipo){
+        authMsg.textContent = texto;
+    authMsg.className = "auth-msg " + (tipo || "error");
+  }
+
+  formAuth.addEventListener("submit", async function(ev){
+    ev.preventDefault();
+    var email = document.getElementById("auth-email").value.trim();
+    var password = document.getElementById("auth-password").value;
+    btnAuthSubmit.disabled = true;
+    try{
+      if(modoAuth === "login"){
+        var r = await sb.auth.signInWithPassword({ email: email, password: password });
+        if(r.error) throw r.error;
+      } else {
+        var r2 = await sb.auth.signUp({ email: email, password: password });
+        if(r2.error) throw r2.error;
+        if(r2.data && r2.data.user && !r2.data.session){
+          mostrarAuthMsg("Cuenta creada. Revisa tu email para confirmar la cuenta y luego entra aquí.", "ok");
+          btnAuthSubmit.disabled = false;
+          return;
+        }
+      }
+      await iniciarSesionCompleta();
+    }catch(err){
+      mostrarAuthMsg(err.message || "Ha ocurrido un error.", "error");
+    }
+    btnAuthSubmit.disabled = false;
+  });
+
+  document.getElementById("btn-logout").addEventListener("click", async function(){
+    await sb.auth.signOut();
+    datos = [];
+    organizacionId = null;
+    mostrarSolo(pantallaAuth);
+  });
+
+  // ---------------------------------------------------------------------
+  // ALTA DE ORGANIZACIÓN (primera vez que entra un usuario)
+  // ---------------------------------------------------------------------
+  document.getElementById("form-crear-org").addEventListener("submit", async function(ev){
+    ev.preventDefault();
+    var nombre = document.getElementById("nombre-org").value.trim();
+    if(!nombre) return;
+    try{
+      var r = await sb.rpc("crear_mi_organizacion", { nombre_organizacion: nombre });
+      if(r.error) throw r.error;
+      await iniciarSesionCompleta();
+    }catch(err){
+      alert("No se pudo crear la bodega: " + (err.message || err));
+    }
+  });
+
+  async function obtenerOrganizacion(){
+    var r = await sb.from("miembros_organizacion").select("organizacion_id, organizaciones(nombre)").limit(1);
+    if(r.error) throw r.error;
+    if(r.data && r.data.length > 0){
+      return { id: r.data[0].organizacion_id, nombre: r.data[0].organizaciones ? r.data[0].organizaciones.nombre : "" };
+    }
+    return null;
+  }
+
+  async function iniciarSesionCompleta(){
+    var userRes = await sb.auth.getUser();
+    var user = userRes.data ? userRes.data.user : null;
+    if(!user){ mostrarSolo(pantallaAuth); return; }
+
+    var org = await obtenerOrganizacion();
+    if(!org){
+      mostrarSolo(pantallaCrearOrg);
+      return;
+    }
+    organizacionId = org.id;
+    document.getElementById("user-org-nombre").textContent = org.nombre;
+    document.getElementById("user-email").textContent = user.email;
+    mostrarSolo(appEl);
+    await cargarDatos();
+  }
+
+  // ---------------------------------------------------------------------
+  // DATOS
+  // ---------------------------------------------------------------------
+  var tbody = document.getElementById("tbody-muestras");
+  var emptyMsg = document.getElementById("empty-msg");
+  var contador = document.getElementById("contador");
+  var saveStatus = document.getElementById("save-status");
+  var btnCancelar = document.getElementById("btn-cancelar-edicion");
+  var btnGuardar = document.getElementById("btn-guardar");
+  var form = document.getElementById("form-muestra");
+
+  function marcarEstado(texto, tipo){
+        saveStatus.textContent = texto;
+    saveStatus.className = "save-status" + (tipo ? " " + tipo : "");
+  }
+
+  function filaDesdeBD(row){
+        var r = { id: row.id };
+    campos.forEach(function(c){ r[c] = row[campoAColumna[c]]; });
+    return r;
+  }
+
+  async function cargarDatos(){
+    marcarEstado("Cargando…", "saving");
+    try{
+      var r = await sb.from(TABLA).select("*").order("fecha", { ascending: false });
+      if(r.error) throw r.error;
+      datos = (r.data || []).map(filaDesdeBD);
+      marcarEstado("✓ Sincronizado", "");
+      render();
+    }catch(err){
+      console.error(err);
+      marcarEstado("⚠ No se pudo cargar (" + (err.message || "error") + ")", "error");
+    }
+  }
+
+  document.getElementById("btn-refrescar").addEventListener("click", cargarDatos);
+
+  function badgeEstado(estado){
+        var clase = "badge-bueno";
+    if(estado === "Regular") clase = "badge-regular";
+    if(estado === "Con podredumbre") clase = "badge-podredumbre";
+    return '<span class="badge ' + clase + '">' + escapeHtml(estado || "") + '</span>';
+  }
+
+  function escapeHtml(str){
+        if(str === null || str === undefined) return "";
+    return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+      }
+
+  function render(){
+        tbody.innerHTML = "";
+    emptyMsg.style.display = datos.length === 0 ? "block" : "none";
+    datos.forEach(function(d){
+            var tr = document.createElement("tr");
+      tr.innerHTML =
+                "<td>" + escapeHtml(d.fecha) + "</td>" +
+                "<td>" + escapeHtml(d.parcela) + "</td>" +
+                "<td>" + escapeHtml(d.variedad) + "</td>" +
+                "<td>" + escapeHtml(d.muestra) + "</td>" +
+                "<td>" + escapeHtml(d.baume) + "</td>" +
+                "<td>" + escapeHtml(d.brix) + "</td>" +
+                "<td>" + escapeHtml(d.acidez) + "</td>" +
+                "<td>" + escapeHtml(d.ph) + "</td>" +
+                "<td>" + escapeHtml(d.peso100) + "</td>" +
+                "<td>" + badgeEstado(d.estado) + "</td>" +
+                "<td>" + escapeHtml(d.ipt) + "</td>" +
+                "<td>" + escapeHtml(d.antocianos) + "</td>" +
+                "<td>" + escapeHtml(d.responsable) + "</td>" +
+                "<td title=\"" + escapeHtml(d.observaciones) + "\">" + escapeHtml((d.observaciones||"").slice(0,20)) + ((d.observaciones||"").length>20?"…":"") + "</td>" +
+                "<td class=\"row-actions\">" +
+                  "<button type=\"button\" class=\"btn-ghost\" data-editar=\"" + d.id + "\">✎</button>" +
+                  "<button type=\"button\" class=\"btn-ghost\" data-borrar=\"" + d.id + "\">🗑</button>" +
+                "</td>";
+      tbody.appendChild(tr);
+    });
+    contador.textContent = datos.length + (datos.length === 1 ? " muestra registrada" : " muestras registradas");
+  }
+
+  function limpiarFormulario(){
+        campos.forEach(function(c){ var el = document.getElementById(c); if(el) el.value = ""; });
+    document.getElementById("estado").value = "Bueno";
+    document.getElementById("fecha").value = new Date().toISOString().slice(0,10);
+    editandoId = null;
+    btnCancelar.style.display = "none";
+    btnGuardar.textContent = "＋ Añadir muestra";
+}
+
+  form.addEventListener("submit", async function(ev){
+    ev.preventDefault();
+    var registro = {};
+    campos.forEach(function(c){ registro[c] = document.getElementById(c).value.trim(); });
+    if(!registro.fecha || !registro.parcela || !registro.variedad){
+      alert("Por favor, rellena al menos Fecha, Parcela/Lote y Variedad.");
+      return;
+    }
+
+    var fila = {};
+    campos.forEach(function(c){
+            var v = registro[c];
+      fila[campoAColumna[c]] = (v === "" ? null : v);
+    });
+    fila.organizacion_id = organizacionId;
+
+    marcarEstado("Guardando…", "saving");
+    try{
+      if(editandoId){
+        var r = await sb.from(TABLA).update(fila).eq("id", editandoId);
+        if(r.error) throw r.error;
+      } else {
+        var userRes = await sb.auth.getUser();
+        fila.creado_por = userRes.data.user.id;
+        var r2 = await sb.from(TABLA).insert(fila);
+        if(r2.error) throw r2.error;
+      }
+      marcarEstado("✓ Sincronizado", "");
+      limpiarFormulario();
+      await cargarDatos();
+    }catch(err){
+      console.error(err);
+      marcarEstado("⚠ No se pudo guardar", "error");
+      alert("No se pudo guardar: " + (err.message || err));
+    }
+  });
+
+  btnCancelar.addEventListener("click", limpiarFormulario);
+
+  tbody.addEventListener("click", async function(ev){
+    var editId = ev.target.getAttribute("data-editar");
+    var delId = ev.target.getAttribute("data-borrar");
+    if(editId){
+      var reg = datos.find(function(d){ return d.id === editId; });
+      if(reg){
+        campos.forEach(function(c){ var el = document.getElementById(c); if(el) el.value = reg[c] || ""; });
+        editandoId = editId;
+        btnCancelar.style.display = "inline-block";
+        btnGuardar.textContent = "✓ Guardar cambios";
+        window.scrollTo({top:0, behavior:"smooth"});
+      }
+    }
+    if(delId){
+      if(confirm("¿Borrar esta muestra? Esta acción no se puede deshacer.")){
+        marcarEstado("Borrando…", "saving");
+        try{
+          var r = await sb.from(TABLA).delete().eq("id", delId);
+          if(r.error) throw r.error;
+          marcarEstado("✓ Sincronizado", "");
+          await cargarDatos();
+        }catch(err){
+          marcarEstado("⚠ No se pudo borrar", "error");
+          alert("No se pudo borrar: " + (err.message || err));
+        }
+      }
+    }
+  });
+
+  // ---------------------------------------------------------------------
+  // EXPORTAR / IMPORTAR CSV (copia de respaldo, sigue siendo tuya siempre)
+  // ---------------------------------------------------------------------
+  function csvEscape(val){
+        var s = (val === null || val === undefined) ? "" : String(val);
+    if(/[",;\n]/.test(s)) s = '"' + s.replace(/"/g,'""') + '"';
+          return s;
+      }
+
+  document.getElementById("btn-exportar").addEventListener("click", function(){
+          var cabecera = campos.map(function(c){ return etiquetas[c]; });
+    var filas = [cabecera.join(";")];
+    datos.forEach(function(d){ filas.push(campos.map(function(c){ return csvEscape(d[c]); }).join(";")); });
+    var csv = "﻿" + filas.join("\r\n");
+    var blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "control_previo_maduracion_" + new Date().toISOString().slice(0,10) + ".csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    });
+
+  document.getElementById("btn-importar-trigger").addEventListener("click", function(){
+        document.getElementById("btn-importar").click();
+  });
+
+  function parseCsvLine(line){
+        var result = [], cur = "", inQuotes = false;
+    for(var i=0;i<line.length;i++){
+      var ch = line[i];
+      if(inQuotes){
+        if(ch === '"'){ if(line[i+1] === '"'){ cur += '"'; i++; } else { inQuotes = false; } }
+        else { cur += ch; }
+      } else {
+        if(ch === '"'){ inQuotes = true; }
+        else if(ch === ";" || ch === ","){ result.push(cur); cur = ""; }
+        else { cur += ch; }
+      }
+    }
+    result.push(cur);
+    return result;
+  }
+
+  document.getElementById("btn-importar").addEventListener("change", function(ev){
+        var file = ev.target.files[0];
+    if(!file) return;
+    var reader = new FileReader();
+    reader.onload = async function(e){
+      try{
+        var text = e.target.result.replace(/^﻿/, "");
+                  var lineas = text.split(/\r\n|\n/).filter(function(l){ return l.trim() !== ""; });
+        if(lineas.length < 2){ alert("El archivo no parece tener datos."); return; }
+        var cabecera = parseCsvLine(lineas[0]);
+        var etiquetaACampo = {};
+        campos.forEach(function(c){ etiquetaACampo[etiquetas[c]] = c; });
+        var userRes = await sb.auth.getUser();
+        var nuevos = [];
+        for(var i=1;i<lineas.length;i++){
+          var valores = parseCsvLine(lineas[i]);
+          var registro = {};
+          cabecera.forEach(function(etq, idx){
+                        var campo = etiquetaACampo[etq.trim()];
+            if(campo) registro[campo] = valores[idx] || "";
+          });
+          if(registro.fecha || registro.parcela){
+            var fila = {};
+            campos.forEach(function(c){ fila[campoAColumna[c]] = (registro[c] === "" ? null : registro[c]); });
+            fila.organizacion_id = organizacionId;
+            fila.creado_por = userRes.data.user.id;
+            nuevos.push(fila);
+          }
+        }
+        if(nuevos.length === 0){ alert("No se encontraron filas válidas."); return; }
+        if(!confirm(nuevos.length + " muestras encontradas. ¿Añadirlas a tus registros en la nube?")) return;
+        marcarEstado("Importando…", "saving");
+        var r = await sb.from(TABLA).insert(nuevos);
+        if(r.error) throw r.error;
+        marcarEstado("✓ Sincronizado", "");
+        await cargarDatos();
+        alert("Importación completada.");
+      }catch(err){
+        console.error(err);
+        marcarEstado("⚠ Error al importar", "error");
+        alert("No se pudo importar: " + (err.message || err));
+      }
+      ev.target.value = "";
+    };
+    reader.readAsText(file, "UTF-8");
+  });
+
+  // ---------------------------------------------------------------------
+  // ARRANQUE
+  // ---------------------------------------------------------------------
+  document.getElementById("fecha") && (document.getElementById("fecha").value = new Date().toISOString().slice(0,10));
+
+  sb.auth.onAuthStateChange(function(event, session){
+        if(session && session.user){
+      iniciarSesionCompleta();
+        } else {
+      mostrarSolo(pantallaAuth);
+        }
+  });
+
+  sb.auth.getSession().then(function(r){
+        if(r.data && r.data.session){
+      iniciarSesionCompleta();
+        } else {
+      mostrarSolo(pantallaAuth);
+        }
+  });
+
+  })();
+</script>
+
+  </body>
+  </html>
+  
