@@ -1,92 +1,92 @@
 <!DOCTYPE html>
-  <html lang="es">
-  <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vendimia — Control Previo de Maduración</title>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vendimia — Control Previo de Maduración</title>
 
-  <!--
-    ============================================================================
-    CONFIGURACIÓN — rellena estos dos valores con los de tu proyecto Supabase
+<!--
+  ============================================================================
+  CONFIGURACIÓN — rellena estos dos valores con los de tu proyecto Supabase
   (Project Settings → API → Project URL / anon public key). Son seguros de
   tener aquí, a la vista: la protección real de los datos la hace la base de
   datos (Row Level Security), no el que esta clave esté oculta.
   ============================================================================
 -->
-  <script>
-    window.SUPABASE_URL = "https://ubapqtuvpnotacjzwcrg.supabase.co";
+<script>
+  window.SUPABASE_URL = "https://ubapqtuvpnotacjzwcrg.supabase.co";
   window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InViYXBxdHV2cG5vdGFjanp3Y3JnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2NTI1NDQsImV4cCI6MjEwMzIyODU0NH0.pDk7tU7cWkzcUreZ0ECS0eniM_Au-qXaY9fCZAH5xEQ";
 </script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
-  <style>
-    :root{
-      --vino:#6b1e2b;
+<style>
+  :root{
+    --vino:#6b1e2b;
     --vino-dark:#4a1420;
     --vino-light:#f4e9ea;
-          --bg:#faf8f6;
-          --card:#ffffff;
-          --texto:#2b2523;
+    --bg:#faf8f6;
+    --card:#ffffff;
+    --texto:#2b2523;
     --texto-suave:#6b625d;
     --borde:#e3dcd8;
-          --ok:#3d7a4a;
+    --ok:#3d7a4a;
     --warn:#b8862c;
-          --bad:#a5333a;
-      }
+    --bad:#a5333a;
+  }
   *{box-sizing:border-box;}
   body{
-        margin:0;
+    margin:0;
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     background:var(--bg);
     color:var(--texto);
     padding:0 0 60px 0;
-}
+  }
   header{
-        background:linear-gradient(135deg,var(--vino) 0%,var(--vino-dark) 100%);
+    background:linear-gradient(135deg,var(--vino) 0%,var(--vino-dark) 100%);
     color:#fff;
-        padding:24px 20px 20px;
-}
+    padding:24px 20px 20px;
+  }
   header .top-row{
-        display:flex;
+    display:flex;
     justify-content:space-between;
     align-items:flex-start;
     flex-wrap:wrap;
     gap:10px;
-}
+  }
   header h1{margin:0 0 4px;font-size:1.4rem;font-weight:700;}
   header p{margin:0;opacity:.9;font-size:.9rem;}
   .user-box{font-size:.8rem;text-align:right;opacity:.95;}
   .user-box button{
-        margin-top:4px;
+    margin-top:4px;
     background:rgba(255,255,255,.15);
     border:1px solid rgba(255,255,255,.4);
     color:#fff;
-        padding:4px 10px;
+    padding:4px 10px;
     border-radius:6px;
     font-size:.75rem;
     cursor:pointer;
-}
+  }
   .roadmap{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;}
   .pill{font-size:.72rem;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);}
   .pill.activa{background:#fff;color:var(--vino-dark);font-weight:700;border-color:#fff;}
-    .wrap{max-width:900px;margin:0 auto;padding:0 16px;}
+  .wrap{max-width:900px;margin:0 auto;padding:0 16px;}
   .card{background:var(--card);border:1px solid var(--borde);border-radius:14px;padding:20px;margin-top:20px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
   .card h2{margin:0 0 14px;font-size:1.05rem;color:var(--vino-dark);}
   .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px 14px;}
   label{display:block;font-size:.78rem;font-weight:600;color:var(--texto-suave);margin-bottom:4px;}
   input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--borde);border-radius:8px;font-size:.95rem;font-family:inherit;background:#fff;color:var(--texto);}
-    input:focus,select:focus,textarea:focus{outline:2px solid var(--vino);outline-offset:1px;}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--vino);outline-offset:1px;}
   textarea{resize:vertical;min-height:50px;}
   .full{grid-column:1/-1;}
   .actions{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
   button{font-family:inherit;font-size:.9rem;font-weight:600;padding:10px 18px;border-radius:8px;border:1px solid transparent;cursor:pointer;}
   .btn-primary{background:var(--vino);color:#fff;}
-    .btn-primary:hover{background:var(--vino-dark);}
+  .btn-primary:hover{background:var(--vino-dark);}
   .btn-secondary{background:#fff;color:var(--vino);border-color:var(--vino);}
-      .btn-secondary:hover{background:var(--vino-light);}
+  .btn-secondary:hover{background:var(--vino-light);}
   .btn-ghost{background:transparent;color:var(--texto-suave);border-color:var(--borde);}
   .btn-ghost:hover{background:#f0ece9;}
-    .toolbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;}
+  .toolbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;}
   .estado-count{font-size:.82rem;color:var(--texto-suave);}
   table{width:100%;border-collapse:collapse;font-size:.86rem;}
   th,td{text-align:left;padding:8px 8px;border-bottom:1px solid var(--borde);white-space:nowrap;}
@@ -95,17 +95,17 @@
   .table-scroll{overflow-x:auto;}
   .badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.72rem;font-weight:700;}
   .badge-bueno{background:#e4f2e6;color:var(--ok);}
-      .badge-regular{background:#fbf1de;color:var(--warn);}
-      .badge-podredumbre{background:#fbe6e6;color:var(--bad);}
-      .row-actions button{padding:5px 9px;font-size:.78rem;margin-right:4px;}
-      .empty{text-align:center;color:var(--texto-suave);padding:30px 10px;font-size:.9rem;}
+  .badge-regular{background:#fbf1de;color:var(--warn);}
+  .badge-podredumbre{background:#fbe6e6;color:var(--bad);}
+  .row-actions button{padding:5px 9px;font-size:.78rem;margin-right:4px;}
+  .empty{text-align:center;color:var(--texto-suave);padding:30px 10px;font-size:.9rem;}
   .save-status{font-size:.78rem;color:var(--ok);display:flex;align-items:center;gap:6px;}
   .save-status.saving{color:var(--warn);}
   .save-status.error{color:var(--bad);}
   .hint{font-size:.8rem;color:var(--texto-suave);margin-top:8px;line-height:1.5;}
   details summary{cursor:pointer;font-weight:600;color:var(--vino);font-size:.88rem;}
   details[open] summary{margin-bottom:10px;}
-      .roadmap-list{margin:0;padding-left:18px;font-size:.85rem;color:var(--texto-suave);line-height:1.7;}
+  .roadmap-list{margin:0;padding-left:18px;font-size:.85rem;color:var(--texto-suave);line-height:1.7;}
   input[type=file]{display:none;}
 
   /* Pantalla de acceso */
@@ -113,176 +113,373 @@
     max-width:380px;
     margin:60px auto;
     padding:0 16px;
-}
+  }
   #pantalla-auth .card{margin-top:0;}
   .auth-tabs{display:flex;gap:8px;margin-bottom:16px;}
   .auth-tabs button{flex:1;background:#fff;color:var(--texto-suave);border-color:var(--borde);}
-    .auth-tabs button.activo{background:var(--vino);color:#fff;border-color:var(--vino);}
-    .auth-msg{font-size:.82rem;margin-top:10px;padding:8px 10px;border-radius:8px;}
+  .auth-tabs button.activo{background:var(--vino);color:#fff;border-color:var(--vino);}
+  .auth-msg{font-size:.82rem;margin-top:10px;padding:8px 10px;border-radius:8px;}
   .auth-msg.error{background:#fbe6e6;color:var(--bad);}
-    .auth-msg.ok{background:#e4f2e6;color:var(--ok);}
-    .oculto{display:none !important;}
+  .auth-msg.ok{background:#e4f2e6;color:var(--ok);}
+  .campana-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:20px;padding:12px 14px;background:var(--card);border:1px solid var(--borde);border-radius:12px;}
+  .campana-bar label{margin:0;white-space:nowrap;}
+  .campana-bar select{width:auto;min-width:140px;}
+  .campana-bar button{white-space:nowrap;}
+  .main-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+  .main-tabs button{background:#fff;color:var(--texto-suave);border-color:var(--borde);}
+  .main-tabs button.activo{background:var(--vino);color:#fff;border-color:var(--vino);}
+  .oculto{display:none !important;}
   @media (max-width:600px){header h1{font-size:1.2rem;}.card{padding:16px;}}
 </style>
-  </head>
-  <body>
+</head>
+<body>
 
-  <!-- ============================= PANTALLA DE ACCESO ============================= -->
-  <div id="pantalla-auth" class="oculto">
-    <div class="card">
-      <h2 style="text-align:center;">🍇 Vendimia</h2>
-      <div class="auth-tabs">
-        <button type="button" id="tab-login" class="activo">Entrar</button>
-        <button type="button" id="tab-signup">Crear cuenta</button>
-      </div>
-      <form id="form-auth">
-        <label for="auth-email">Email</label>
-        <input type="email" id="auth-email" required autocomplete="username">
-        <div style="height:10px;"></div>
-        <label for="auth-password">Contraseña</label>
-        <input type="password" id="auth-password" required autocomplete="current-password" minlength="6">
-        <div class="actions">
-          <button type="submit" class="btn-primary full" id="btn-auth-submit" style="width:100%;">Entrar</button>
-        </div>
-      </form>
-      <div id="auth-msg" class="auth-msg oculto"></div>
+<!-- ============================= PANTALLA DE ACCESO ============================= -->
+<div id="pantalla-auth" class="oculto">
+  <div class="card">
+    <h2 style="text-align:center;">🍇 Vendimia</h2>
+    <div class="auth-tabs">
+      <button type="button" id="tab-login" class="activo">Entrar</button>
+      <button type="button" id="tab-signup">Crear cuenta</button>
     </div>
+    <form id="form-auth">
+      <label for="auth-email">Email</label>
+      <input type="email" id="auth-email" required autocomplete="username">
+      <div style="height:10px;"></div>
+      <label for="auth-password">Contraseña</label>
+      <input type="password" id="auth-password" required autocomplete="current-password" minlength="6">
+      <div class="actions">
+        <button type="submit" class="btn-primary full" id="btn-auth-submit" style="width:100%;">Entrar</button>
+      </div>
+    </form>
+    <div id="auth-msg" class="auth-msg oculto"></div>
   </div>
+</div>
 
-  <!-- ==================== PANTALLA "CREAR TU BODEGA" (primera vez) ==================== -->
-  <div id="pantalla-crear-org" class="oculto" style="max-width:380px;margin:60px auto;padding:0 16px;">
-    <div class="card">
-      <h2>Un último paso</h2>
+<!-- ==================== PANTALLA "CREAR TU BODEGA" (primera vez) ==================== -->
+<div id="pantalla-crear-org" class="oculto" style="max-width:380px;margin:60px auto;padding:0 16px;">
+  <div class="card">
+    <h2>Un último paso</h2>
     <p class="hint">Dale un nombre a tu bodega. Esto agrupará todos tus datos y te permitirá, en el futuro, dar acceso a otras personas de tu equipo (o, si algún día vendes esta app, mantener separados los datos de cada bodega cliente).</p>
     <form id="form-crear-org">
-        <label for="nombre-org">Nombre de tu bodega</label>
-        <input type="text" id="nombre-org" placeholder="Ej. Bodega Belén" required>
-        <div class="actions">
-          <button type="submit" class="btn-primary">Continuar</button>
-        </div>
-      </form>
-    </div>
+      <label for="nombre-org">Nombre de tu bodega</label>
+      <input type="text" id="nombre-org" placeholder="Ej. Bodega Belén" required>
+      <div class="actions">
+        <button type="submit" class="btn-primary">Continuar</button>
+      </div>
+    </form>
   </div>
+</div>
 
-  <!-- ============================= APP PRINCIPAL ============================= -->
-  <div id="app" class="oculto">
+<!-- ============================= APP PRINCIPAL ============================= -->
+<div id="app" class="oculto">
 
-    <header>
-      <div class="wrap">
-        <div class="top-row">
-          <div>
-            <h1>🍇 Control Previo de Maduración</h1>
-          <p>Módulo 1 de tu app de trazabilidad de vendimia — en la nube, accesible desde cualquier dispositivo.</p>
-          </div>
-          <div class="user-box">
-            <div id="user-org-nombre"></div>
-            <div id="user-email"></div>
-            <button type="button" id="btn-logout">Salir</button>
-          </div>
+  <header>
+    <div class="wrap">
+      <div class="top-row">
+        <div>
+          <h1>🍇 Vendimia — Trazabilidad</h1>
+          <p>Tu app de trazabilidad de vendimia — en la nube, accesible desde cualquier dispositivo.</p>
         </div>
-        <div class="roadmap">
-          <span class="pill activa">1. Control previo</span>
-          <span class="pill">2. Vendimia</span>
-          <span class="pill">3. Bodega / Fermentación</span>
-          <span class="pill">4. Análisis químicos</span>
-          <span class="pill">5. Venta / Trazabilidad</span>
+        <div class="user-box">
+          <div id="user-org-nombre"></div>
+          <div id="user-email"></div>
+          <button type="button" id="btn-logout">Salir</button>
         </div>
       </div>
-    </header>
+      <div class="roadmap">
+        <span class="pill activa">1. Control previo</span>
+        <span class="pill">2. Vendimia</span>
+        <span class="pill">3. Bodega / Fermentación</span>
+        <span class="pill">4. Análisis químicos</span>
+        <span class="pill">5. Venta / Trazabilidad</span>
+      </div>
+    </div>
+  </header>
 
-    <div class="wrap">
+  <div class="wrap">
+
+    <div class="campana-bar">
+      <label for="select-campana">Campaña</label>
+      <select id="select-campana"></select>
+      <button type="button" class="btn-secondary" id="btn-nueva-campana">+ Nueva campaña</button>
+    </div>
+
+    <div class="main-tabs">
+      <button type="button" class="tab-btn" data-tab="parcelas">🗺️ Parcelas</button>
+      <button type="button" class="tab-btn" data-tab="depositos">🛢️ Depósitos</button>
+      <button type="button" class="tab-btn" data-tab="tratamientos">🧪 Tratamientos y costes</button>
+      <button type="button" class="tab-btn activo" data-tab="maduracion">🍇 Maduración</button>
+    </div>
+
+    <div id="seccion-parcelas" class="oculto">
 
       <div class="card">
-        <h2>Nueva muestra</h2>
-        <form id="form-muestra">
+        <h2 id="form-parcela-titulo">Nueva parcela</h2>
+        <form id="form-parcela">
           <div class="grid">
-            <div><label for="fecha">Fecha</label><input type="date" id="fecha" required></div>
-            <div><label for="parcela">Parcela / Lote</label><input type="text" id="parcela" placeholder="Ej. La Solana" required></div>
-            <div><label for="variedad">Variedad</label><input type="text" id="variedad" placeholder="Ej. Tempranillo" required></div>
-            <div><label for="muestra">Nº de muestra</label><input type="text" id="muestra" placeholder="Ej. M-01"></div>
-            <div><label for="baume">Grado Baumé (°Bé)</label><input type="number" step="0.1" id="baume" placeholder="Ej. 12.5"></div>
-            <div><label for="brix">°Brix</label><input type="number" step="0.1" id="brix" placeholder="Ej. 22.0"></div>
-            <div><label for="acidez">Acidez total (g/L ác. tartárico)</label><input type="number" step="0.1" id="acidez" placeholder="Ej. 6.2"></div>
-            <div><label for="ph">pH</label><input type="number" step="0.01" id="ph" placeholder="Ej. 3.35"></div>
-            <div><label for="peso100">Peso de 100 bayas (g)</label><input type="number" step="1" id="peso100" placeholder="Ej. 180"></div>
+            <div><label for="p-poligono">Polígono</label><input type="text" id="p-poligono" placeholder="Ej. 4"></div>
+            <div><label for="p-recinto">Recinto</label><input type="text" id="p-recinto" placeholder="Ej. 12"></div>
+            <div><label for="p-nombre">Nombre de la parcela</label><input type="text" id="p-nombre" placeholder="Ej. La Solana" required></div>
+            <div><label for="p-variedad">Variedad</label><input type="text" id="p-variedad" placeholder="Ej. Tempranillo"></div>
             <div>
-              <label for="estado">Estado sanitario</label>
-              <select id="estado">
-                <option value="Bueno">Bueno</option>
-                <option value="Regular">Regular</option>
-                <option value="Con podredumbre">Con podredumbre</option>
+              <label for="p-eco">Ecológico</label>
+              <select id="p-eco">
+                <option value="no">No</option>
+                <option value="si">Sí</option>
               </select>
             </div>
-            <div><label for="ipt">IPT (polifenoles, opcional)</label><input type="number" step="0.1" id="ipt" placeholder="Ej. 45"></div>
-            <div><label for="antocianos">Antocianos mg/L (opcional)</label><input type="number" step="1" id="antocianos" placeholder="Ej. 850"></div>
-            <div><label for="responsable">Responsable</label><input type="text" id="responsable" placeholder="Ej. Belén"></div>
-            <div class="full"><label for="observaciones">Observaciones</label><textarea id="observaciones" placeholder="Notas de campo, climatología, incidencias..."></textarea></div>
+            <div><label for="p-extension">Extensión (ha)</label><input type="number" step="0.01" id="p-extension" placeholder="Ej. 1.85"></div>
+            <div><label for="p-cepas">Nº de cepas</label><input type="number" step="1" id="p-cepas" placeholder="Ej. 3200"></div>
+            <div><label for="p-filas">Nº de filas</label><input type="number" step="1" id="p-filas" placeholder="Ej. 48"></div>
+            <div class="full"><label for="p-observaciones">Observaciones</label><textarea id="p-observaciones" placeholder="Notas sobre la parcela..."></textarea></div>
           </div>
           <div class="actions">
-            <button type="submit" class="btn-primary" id="btn-guardar">＋ Añadir muestra</button>
-            <button type="button" class="btn-ghost" id="btn-cancelar-edicion" style="display:none;">Cancelar edición</button>
+            <button type="submit" class="btn-primary" id="btn-guardar-parcela">＋ Añadir parcela</button>
+            <button type="button" class="btn-ghost" id="btn-cancelar-parcela" style="display:none;">Cancelar edición</button>
           </div>
         </form>
       </div>
 
       <div class="card">
         <div class="toolbar">
-          <h2 style="margin:0;">Registros</h2>
-          <span class="estado-count" id="contador">Cargando…</span>
+          <h2 style="margin:0;">Parcelas</h2>
+          <span class="estado-count" id="contador-parcelas">Cargando…</span>
         </div>
         <div class="actions" style="margin-top:0;margin-bottom:14px;">
-          <button type="button" class="btn-secondary" id="btn-refrescar">🔄 Actualizar</button>
-          <button type="button" class="btn-secondary" id="btn-exportar">⬇ Exportar a Excel/CSV</button>
-          <button type="button" class="btn-secondary" id="btn-importar-trigger">⬆ Importar desde Excel/CSV</button>
-          <input type="file" id="btn-importar" accept=".csv">
-          <span class="save-status" id="save-status">✓ Sincronizado</span>
+          <button type="button" class="btn-secondary" id="btn-refrescar-parcelas">🔄 Actualizar</button>
         </div>
         <div class="table-scroll">
-          <table id="tabla-muestras">
+          <table id="tabla-parcelas">
             <thead>
               <tr>
-                <th>Fecha</th><th>Parcela/Lote</th><th>Variedad</th><th>Muestra</th><th>°Bé</th><th>°Brix</th>
-                <th>Acidez</th><th>pH</th><th>100 bayas (g)</th><th>Estado</th><th>IPT</th><th>Antocianos</th>
-                <th>Responsable</th><th>Obs.</th><th></th>
+                <th>Polígono</th><th>Recinto</th><th>Nombre</th><th>Variedad</th><th>Eco</th>
+                <th>Ha</th><th>Cepas</th><th>Filas</th><th>Coste acumul. (€)</th><th>Obs.</th><th></th>
               </tr>
             </thead>
-            <tbody id="tbody-muestras"></tbody>
+            <tbody id="tbody-parcelas"></tbody>
           </table>
-          <div class="empty" id="empty-msg">Todavía no has añadido ninguna muestra. Rellena el formulario de arriba para empezar.</div>
+          <div class="empty" id="empty-parcelas">Todavía no has añadido ninguna parcela. Rellena el formulario de arriba para empezar.</div>
+        </div>
+        <p class="hint">
+          Este inventario es la base para calcular indicadores como kilos por hectárea en próximos módulos, y
+          para llevar el historial de tratamientos y costes por parcela en la pestaña de al lado.
+        </p>
+      </div>
+
+    </div>
+
+    <div id="seccion-depositos" class="oculto">
+
+      <div class="card">
+        <h2 id="form-deposito-titulo">Nuevo depósito</h2>
+        <form id="form-deposito">
+          <div class="grid">
+            <div><label for="dp-nombre">Nombre / Nº de depósito</label><input type="text" id="dp-nombre" placeholder="Ej. Depósito 3" required></div>
+            <div>
+              <label for="dp-tipo">Tipo</label>
+              <select id="dp-tipo">
+                <option value="Acero inoxidable">Acero inoxidable</option>
+                <option value="Hormigón">Hormigón</option>
+                <option value="Barrica de roble">Barrica de roble</option>
+                <option value="Fibra">Fibra</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+            <div><label for="dp-capacidad">Capacidad (litros)</label><input type="number" step="1" id="dp-capacidad" placeholder="Ej. 5000"></div>
+            <div><label for="dp-ubicacion">Ubicación</label><input type="text" id="dp-ubicacion" placeholder="Ej. Nave principal"></div>
+            <div class="full"><label for="dp-observaciones">Observaciones</label><textarea id="dp-observaciones" placeholder="Notas sobre el depósito..."></textarea></div>
+          </div>
+          <div class="actions">
+            <button type="submit" class="btn-primary" id="btn-guardar-deposito">＋ Añadir depósito</button>
+            <button type="button" class="btn-ghost" id="btn-cancelar-deposito" style="display:none;">Cancelar edición</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="toolbar">
+          <h2 style="margin:0;">Depósitos</h2>
+          <span class="estado-count" id="contador-depositos">Cargando…</span>
+        </div>
+        <div class="actions" style="margin-top:0;margin-bottom:14px;">
+          <button type="button" class="btn-secondary" id="btn-refrescar-depositos">🔄 Actualizar</button>
+        </div>
+        <div class="table-scroll">
+          <table id="tabla-depositos">
+            <thead>
+              <tr><th>Nombre</th><th>Tipo</th><th>Capacidad (L)</th><th>Ubicación</th><th>Obs.</th><th></th></tr>
+            </thead>
+            <tbody id="tbody-depositos"></tbody>
+          </table>
+          <div class="empty" id="empty-depositos">Todavía no has añadido ningún depósito. Rellena el formulario de arriba para empezar.</div>
+        </div>
+        <p class="hint">
+          Este inventario de depósitos será la base para la trazabilidad de bodega (qué lote fermenta en qué
+          depósito) cuando construyamos el módulo de Bodega / Fermentación.
+        </p>
+      </div>
+
+    </div>
+
+    <div id="seccion-tratamientos" class="oculto">
+
+      <div class="card">
+        <h2 id="form-tratamiento-titulo">Nuevo tratamiento / labor</h2>
+        <form id="form-tratamiento">
+          <div class="grid">
+            <div>
+              <label for="t-parcela">Parcela</label>
+              <select id="t-parcela" required></select>
+            </div>
+            <div><label for="t-fecha">Fecha</label><input type="date" id="t-fecha" required></div>
+            <div>
+              <label for="t-tipo">Tipo</label>
+              <select id="t-tipo">
+                <option value="Poda">Poda</option>
+                <option value="Labrado">Labrado / Laboreo</option>
+                <option value="Tratamiento fitosanitario">Tratamiento fitosanitario</option>
+                <option value="Abonado">Abonado</option>
+                <option value="Deshojado">Deshojado</option>
+                <option value="Vendimia">Vendimia</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+            <div><label for="t-producto">Producto (opcional)</label><input type="text" id="t-producto" placeholder="Ej. Cobre, azufre..."></div>
+            <div><label for="t-coste">Coste (€)</label><input type="number" step="0.01" id="t-coste" placeholder="Ej. 250"></div>
+            <div><label for="t-responsable">Responsable</label><input type="text" id="t-responsable" placeholder="Ej. Cuadrilla externa"></div>
+            <div class="full"><label for="t-observaciones">Observaciones</label><textarea id="t-observaciones" placeholder="Notas sobre la labor..."></textarea></div>
+          </div>
+          <div class="actions">
+            <button type="submit" class="btn-primary" id="btn-guardar-tratamiento">＋ Añadir tratamiento</button>
+            <button type="button" class="btn-ghost" id="btn-cancelar-tratamiento" style="display:none;">Cancelar edición</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="toolbar">
+          <h2 style="margin:0;">Historial de tratamientos y costes</h2>
+          <span class="estado-count" id="contador-tratamientos">Cargando…</span>
+        </div>
+        <div class="actions" style="margin-top:0;margin-bottom:14px;">
+          <button type="button" class="btn-secondary" id="btn-refrescar-tratamientos">🔄 Actualizar</button>
+        </div>
+        <div class="table-scroll">
+          <table id="tabla-tratamientos">
+            <thead>
+              <tr><th>Fecha</th><th>Parcela</th><th>Tipo</th><th>Producto</th><th>Coste (€)</th><th>Responsable</th><th>Obs.</th><th></th></tr>
+            </thead>
+            <tbody id="tbody-tratamientos"></tbody>
+          </table>
+          <div class="empty" id="empty-tratamientos">Todavía no has añadido ningún tratamiento.</div>
+        </div>
+        <p class="hint" id="resumen-costes"></p>
+      </div>
+
+    </div>
+
+    <div id="seccion-maduracion">
+
+    <div class="card">
+      <h2>Nueva muestra</h2>
+      <form id="form-muestra">
+        <div class="grid">
+          <div><label for="fecha">Fecha</label><input type="date" id="fecha" required></div>
+          <div><label for="parcela">Parcela / Lote</label><input type="text" id="parcela" placeholder="Ej. La Solana" required></div>
+          <div><label for="variedad">Variedad</label><input type="text" id="variedad" placeholder="Ej. Tempranillo" required></div>
+          <div><label for="muestra">Nº de muestra</label><input type="text" id="muestra" placeholder="Ej. M-01"></div>
+          <div><label for="baume">Grado Baumé (°Bé)</label><input type="number" step="0.1" id="baume" placeholder="Ej. 12.5"></div>
+          <div><label for="brix">°Brix</label><input type="number" step="0.1" id="brix" placeholder="Ej. 22.0"></div>
+          <div><label for="acidez">Acidez total (g/L ác. tartárico)</label><input type="number" step="0.1" id="acidez" placeholder="Ej. 6.2"></div>
+          <div><label for="ph">pH</label><input type="number" step="0.01" id="ph" placeholder="Ej. 3.35"></div>
+          <div><label for="peso100">Peso de 100 bayas (g)</label><input type="number" step="1" id="peso100" placeholder="Ej. 180"></div>
+          <div>
+            <label for="estado">Estado sanitario</label>
+            <select id="estado">
+              <option value="Bueno">Bueno</option>
+              <option value="Regular">Regular</option>
+              <option value="Con podredumbre">Con podredumbre</option>
+            </select>
+          </div>
+          <div><label for="ipt">IPT (polifenoles, opcional)</label><input type="number" step="0.1" id="ipt" placeholder="Ej. 45"></div>
+          <div><label for="antocianos">Antocianos mg/L (opcional)</label><input type="number" step="1" id="antocianos" placeholder="Ej. 850"></div>
+          <div><label for="responsable">Responsable</label><input type="text" id="responsable" placeholder="Ej. Belén"></div>
+          <div class="full"><label for="observaciones">Observaciones</label><textarea id="observaciones" placeholder="Notas de campo, climatología, incidencias..."></textarea></div>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn-primary" id="btn-guardar">＋ Añadir muestra</button>
+          <button type="button" class="btn-ghost" id="btn-cancelar-edicion" style="display:none;">Cancelar edición</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="toolbar">
+        <h2 style="margin:0;">Registros</h2>
+        <span class="estado-count" id="contador">Cargando…</span>
+      </div>
+      <div class="actions" style="margin-top:0;margin-bottom:14px;">
+        <button type="button" class="btn-secondary" id="btn-refrescar">🔄 Actualizar</button>
+        <button type="button" class="btn-secondary" id="btn-exportar">⬇ Exportar a Excel/CSV</button>
+        <button type="button" class="btn-secondary" id="btn-importar-trigger">⬆ Importar desde Excel/CSV</button>
+        <input type="file" id="btn-importar" accept=".csv">
+        <span class="save-status" id="save-status">✓ Sincronizado</span>
+      </div>
+      <div class="table-scroll">
+        <table id="tabla-muestras">
+          <thead>
+            <tr>
+              <th>Fecha</th><th>Parcela/Lote</th><th>Variedad</th><th>Muestra</th><th>°Bé</th><th>°Brix</th>
+              <th>Acidez</th><th>pH</th><th>100 bayas (g)</th><th>Estado</th><th>IPT</th><th>Antocianos</th>
+              <th>Responsable</th><th>Obs.</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="tbody-muestras"></tbody>
+        </table>
+        <div class="empty" id="empty-msg">Todavía no has añadido ninguna muestra. Rellena el formulario de arriba para empezar.</div>
       </div>
       <p class="hint">
-          Los datos viven en la nube: puedes entrar desde el móvil en el viñedo, desde el ordenador de la oficina o
+        Los datos viven en la nube: puedes entrar desde el móvil en el viñedo, desde el ordenador de la oficina o
         desde cualquier sitio con internet, y siempre verás lo mismo. Aun así, «Exportar a Excel/CSV» te sigue
         dando una copia tuya para tus propias auditorías o para guardar offline.
       </p>
     </div>
 
     <div class="card">
-        <details>
-          <summary>Sobre esta app y los próximos módulos</summary>
+      <details>
+        <summary>Sobre esta app y los próximos módulos</summary>
         <p class="hint" style="margin-top:10px;">
           El código de esta app es tuyo: vive en tu propia cuenta de GitHub y tu propia base de datos en Supabase,
           no depende de ninguna suscripción a una IA. Si en el futuro quieres adaptarla y ofrecerla a otras
           bodegas, la estructura de datos ya está preparada para eso (cada bodega tiene sus datos completamente
           separados de las demás).
-          </p>
-          <p class="hint" style="margin-top:6px;"><strong>Hoja de ruta prevista:</strong></p>
-          <ol class="roadmap-list">
-            <li><strong>Control previo de maduración</strong> (este módulo)</li>
-            <li>Vendimia: fecha de recolección, kg recogidos, parcela, cuadrilla, transporte</li>
-            <li>Bodega / Fermentación: nº de depósito, temperaturas, densidades, trasiegos</li>
-            <li>Análisis químicos: seguimiento analítico completo por lote</li>
-            <li>Venta / Trazabilidad: lote embotellado → cliente, con historial completo desde la viña</li>
+        </p>
+        <p class="hint" style="margin-top:6px;"><strong>Módulos construidos:</strong></p>
+        <ol class="roadmap-list">
+          <li><strong>Parcelas</strong>: inventario de parcelas (polígono/recinto, variedad, eco, hectáreas, cepas, filas)</li>
+          <li><strong>Depósitos</strong>: inventario de depósitos de bodega</li>
+          <li><strong>Tratamientos y costes</strong>: historial de labores por parcela y campaña (poda, labrado, fitosanitarios...), con coste</li>
+          <li><strong>Control previo de maduración</strong>: seguimiento analítico previo a la vendimia</li>
+        </ol>
+        <p class="hint" style="margin-top:6px;"><strong>Próximos módulos:</strong></p>
+        <ol class="roadmap-list">
+          <li>Vendimia: fecha de recolección, kg recogidos, parcela, cuadrilla, transporte</li>
+          <li>Bodega / Fermentación: qué depósito, temperaturas, densidades, trasiegos</li>
+          <li>Análisis químicos: seguimiento analítico completo por lote</li>
+          <li>Venta / Trazabilidad: lote embotellado → cliente, con historial completo desde la viña</li>
         </ol>
       </details>
+    </div>
+
     </div>
 
   </div>
 </div>
 
-  <script>
-  (function(){
-    "use strict";
+<script>
+(function(){
+  "use strict";
 
   if(!window.supabase){
     document.body.innerHTML = "<p style='padding:40px;font-family:sans-serif;'>No se pudo cargar la librería de Supabase. Comprueba tu conexión a internet y recarga la página.</p>";
@@ -294,16 +491,16 @@
   // Los nombres de columna en la base de datos usan snake_case en un par de casos distintos al id del input
   var campoAColumna = {
     fecha:"fecha", parcela:"parcela", variedad:"variedad", muestra:"muestra",
-        baume:"baume", brix:"brix", acidez:"acidez", ph:"ph", peso100:"peso_100_bayas",
-        estado:"estado_sanitario", ipt:"ipt", antocianos:"antocianos",
-        responsable:"responsable", observaciones:"observaciones"
-    };
+    baume:"baume", brix:"brix", acidez:"acidez", ph:"ph", peso100:"peso_100_bayas",
+    estado:"estado_sanitario", ipt:"ipt", antocianos:"antocianos",
+    responsable:"responsable", observaciones:"observaciones"
+  };
   var etiquetas = {
     fecha:"Fecha", parcela:"Parcela/Lote", variedad:"Variedad", muestra:"Nº muestra",
-        baume:"Grado Baumé", brix:"Brix", acidez:"Acidez total (g/L)", ph:"pH",
-        peso100:"Peso 100 bayas (g)", estado:"Estado sanitario", ipt:"IPT",
-        antocianos:"Antocianos (mg/L)", responsable:"Responsable", observaciones:"Observaciones"
-    };
+    baume:"Grado Baumé", brix:"Brix", acidez:"Acidez total (g/L)", ph:"pH",
+    peso100:"Peso 100 bayas (g)", estado:"Estado sanitario", ipt:"IPT",
+    antocianos:"Antocianos (mg/L)", responsable:"Responsable", observaciones:"Observaciones"
+  };
 
   var sb = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
 
@@ -311,14 +508,41 @@
   var editandoId = null;
   var organizacionId = null;
 
+  var campanasData = [];
+  var campanaActualId = null;
+  var parcelasData = [];
+  var editandoParcelaId = null;
+  var depositosData = [];
+  var editandoDepositoId = null;
+  var tratamientosData = [];
+  var editandoTratamientoId = null;
+
   var pantallaAuth = document.getElementById("pantalla-auth");
   var pantallaCrearOrg = document.getElementById("pantalla-crear-org");
   var appEl = document.getElementById("app");
 
   function mostrarSolo(el){
-        [pantallaAuth, pantallaCrearOrg, appEl].forEach(function(e){ e.classList.add("oculto"); });
+    [pantallaAuth, pantallaCrearOrg, appEl].forEach(function(e){ e.classList.add("oculto"); });
     el.classList.remove("oculto");
   }
+
+  // ---------------------------------------------------------------------
+  // NAVEGACIÓN ENTRE PESTAÑAS
+  // ---------------------------------------------------------------------
+  var tabButtons = document.querySelectorAll(".tab-btn");
+  var secciones = {
+    parcelas: document.getElementById("seccion-parcelas"),
+    depositos: document.getElementById("seccion-depositos"),
+    tratamientos: document.getElementById("seccion-tratamientos"),
+    maduracion: document.getElementById("seccion-maduracion")
+  };
+  tabButtons.forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var tab = btn.getAttribute("data-tab");
+      tabButtons.forEach(function(b){ b.classList.toggle("activo", b === btn); });
+      Object.keys(secciones).forEach(function(k){ secciones[k].classList.toggle("oculto", k !== tab); });
+    });
+  });
 
   // ---------------------------------------------------------------------
   // AUTENTICACIÓN
@@ -331,7 +555,7 @@
   var authMsg = document.getElementById("auth-msg");
 
   function setModoAuth(m){
-        modoAuth = m;
+    modoAuth = m;
     tabLogin.classList.toggle("activo", m === "login");
     tabSignup.classList.toggle("activo", m === "signup");
     btnAuthSubmit.textContent = m === "login" ? "Entrar" : "Crear cuenta";
@@ -341,7 +565,7 @@
   tabSignup.addEventListener("click", function(){ setModoAuth("signup"); });
 
   function mostrarAuthMsg(texto, tipo){
-        authMsg.textContent = texto;
+    authMsg.textContent = texto;
     authMsg.className = "auth-msg " + (tipo || "error");
   }
 
@@ -416,7 +640,11 @@
     document.getElementById("user-org-nombre").textContent = org.nombre;
     document.getElementById("user-email").textContent = user.email;
     mostrarSolo(appEl);
+    await cargarCampanas();
+    await cargarParcelas();
+    await cargarDepositos();
     await cargarDatos();
+    await cargarTratamientos();
   }
 
   // ---------------------------------------------------------------------
@@ -431,12 +659,12 @@
   var form = document.getElementById("form-muestra");
 
   function marcarEstado(texto, tipo){
-        saveStatus.textContent = texto;
+    saveStatus.textContent = texto;
     saveStatus.className = "save-status" + (tipo ? " " + tipo : "");
   }
 
   function filaDesdeBD(row){
-        var r = { id: row.id };
+    var r = { id: row.id };
     campos.forEach(function(c){ r[c] = row[campoAColumna[c]]; });
     return r;
   }
@@ -444,7 +672,9 @@
   async function cargarDatos(){
     marcarEstado("Cargando…", "saving");
     try{
-      var r = await sb.from(TABLA).select("*").order("fecha", { ascending: false });
+      var q = sb.from(TABLA).select("*").order("fecha", { ascending: false });
+      if(campanaActualId) q = q.eq("campana_id", campanaActualId);
+      var r = await q;
       if(r.error) throw r.error;
       datos = (r.data || []).map(filaDesdeBD);
       marcarEstado("✓ Sincronizado", "");
@@ -458,54 +688,54 @@
   document.getElementById("btn-refrescar").addEventListener("click", cargarDatos);
 
   function badgeEstado(estado){
-        var clase = "badge-bueno";
+    var clase = "badge-bueno";
     if(estado === "Regular") clase = "badge-regular";
     if(estado === "Con podredumbre") clase = "badge-podredumbre";
     return '<span class="badge ' + clase + '">' + escapeHtml(estado || "") + '</span>';
   }
 
   function escapeHtml(str){
-        if(str === null || str === undefined) return "";
+    if(str === null || str === undefined) return "";
     return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
-      }
+  }
 
   function render(){
-        tbody.innerHTML = "";
+    tbody.innerHTML = "";
     emptyMsg.style.display = datos.length === 0 ? "block" : "none";
     datos.forEach(function(d){
-            var tr = document.createElement("tr");
+      var tr = document.createElement("tr");
       tr.innerHTML =
-                "<td>" + escapeHtml(d.fecha) + "</td>" +
-                "<td>" + escapeHtml(d.parcela) + "</td>" +
-                "<td>" + escapeHtml(d.variedad) + "</td>" +
-                "<td>" + escapeHtml(d.muestra) + "</td>" +
-                "<td>" + escapeHtml(d.baume) + "</td>" +
-                "<td>" + escapeHtml(d.brix) + "</td>" +
-                "<td>" + escapeHtml(d.acidez) + "</td>" +
-                "<td>" + escapeHtml(d.ph) + "</td>" +
-                "<td>" + escapeHtml(d.peso100) + "</td>" +
-                "<td>" + badgeEstado(d.estado) + "</td>" +
-                "<td>" + escapeHtml(d.ipt) + "</td>" +
-                "<td>" + escapeHtml(d.antocianos) + "</td>" +
-                "<td>" + escapeHtml(d.responsable) + "</td>" +
-                "<td title=\"" + escapeHtml(d.observaciones) + "\">" + escapeHtml((d.observaciones||"").slice(0,20)) + ((d.observaciones||"").length>20?"…":"") + "</td>" +
-                "<td class=\"row-actions\">" +
-                  "<button type=\"button\" class=\"btn-ghost\" data-editar=\"" + d.id + "\">✎</button>" +
-                  "<button type=\"button\" class=\"btn-ghost\" data-borrar=\"" + d.id + "\">🗑</button>" +
-                "</td>";
+        "<td>" + escapeHtml(d.fecha) + "</td>" +
+        "<td>" + escapeHtml(d.parcela) + "</td>" +
+        "<td>" + escapeHtml(d.variedad) + "</td>" +
+        "<td>" + escapeHtml(d.muestra) + "</td>" +
+        "<td>" + escapeHtml(d.baume) + "</td>" +
+        "<td>" + escapeHtml(d.brix) + "</td>" +
+        "<td>" + escapeHtml(d.acidez) + "</td>" +
+        "<td>" + escapeHtml(d.ph) + "</td>" +
+        "<td>" + escapeHtml(d.peso100) + "</td>" +
+        "<td>" + badgeEstado(d.estado) + "</td>" +
+        "<td>" + escapeHtml(d.ipt) + "</td>" +
+        "<td>" + escapeHtml(d.antocianos) + "</td>" +
+        "<td>" + escapeHtml(d.responsable) + "</td>" +
+        "<td title=\"" + escapeHtml(d.observaciones) + "\">" + escapeHtml((d.observaciones||"").slice(0,20)) + ((d.observaciones||"").length>20?"…":"") + "</td>" +
+        "<td class=\"row-actions\">" +
+          "<button type=\"button\" class=\"btn-ghost\" data-editar=\"" + d.id + "\">✎</button>" +
+          "<button type=\"button\" class=\"btn-ghost\" data-borrar=\"" + d.id + "\">🗑</button>" +
+        "</td>";
       tbody.appendChild(tr);
     });
     contador.textContent = datos.length + (datos.length === 1 ? " muestra registrada" : " muestras registradas");
   }
 
   function limpiarFormulario(){
-        campos.forEach(function(c){ var el = document.getElementById(c); if(el) el.value = ""; });
+    campos.forEach(function(c){ var el = document.getElementById(c); if(el) el.value = ""; });
     document.getElementById("estado").value = "Bueno";
     document.getElementById("fecha").value = new Date().toISOString().slice(0,10);
     editandoId = null;
     btnCancelar.style.display = "none";
     btnGuardar.textContent = "＋ Añadir muestra";
-}
+  }
 
   form.addEventListener("submit", async function(ev){
     ev.preventDefault();
@@ -518,10 +748,11 @@
 
     var fila = {};
     campos.forEach(function(c){
-            var v = registro[c];
+      var v = registro[c];
       fila[campoAColumna[c]] = (v === "" ? null : v);
     });
     fila.organizacion_id = organizacionId;
+    if(!editandoId) fila.campana_id = campanaActualId;
 
     marcarEstado("Guardando…", "saving");
     try{
@@ -579,13 +810,13 @@
   // EXPORTAR / IMPORTAR CSV (copia de respaldo, sigue siendo tuya siempre)
   // ---------------------------------------------------------------------
   function csvEscape(val){
-        var s = (val === null || val === undefined) ? "" : String(val);
+    var s = (val === null || val === undefined) ? "" : String(val);
     if(/[",;\n]/.test(s)) s = '"' + s.replace(/"/g,'""') + '"';
-          return s;
-      }
+    return s;
+  }
 
   document.getElementById("btn-exportar").addEventListener("click", function(){
-          var cabecera = campos.map(function(c){ return etiquetas[c]; });
+    var cabecera = campos.map(function(c){ return etiquetas[c]; });
     var filas = [cabecera.join(";")];
     datos.forEach(function(d){ filas.push(campos.map(function(c){ return csvEscape(d[c]); }).join(";")); });
     var csv = "﻿" + filas.join("\r\n");
@@ -598,14 +829,14 @@
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    });
+  });
 
   document.getElementById("btn-importar-trigger").addEventListener("click", function(){
-        document.getElementById("btn-importar").click();
+    document.getElementById("btn-importar").click();
   });
 
   function parseCsvLine(line){
-        var result = [], cur = "", inQuotes = false;
+    var result = [], cur = "", inQuotes = false;
     for(var i=0;i<line.length;i++){
       var ch = line[i];
       if(inQuotes){
@@ -622,13 +853,13 @@
   }
 
   document.getElementById("btn-importar").addEventListener("change", function(ev){
-        var file = ev.target.files[0];
+    var file = ev.target.files[0];
     if(!file) return;
     var reader = new FileReader();
     reader.onload = async function(e){
       try{
         var text = e.target.result.replace(/^﻿/, "");
-                  var lineas = text.split(/\r\n|\n/).filter(function(l){ return l.trim() !== ""; });
+        var lineas = text.split(/\r\n|\n/).filter(function(l){ return l.trim() !== ""; });
         if(lineas.length < 2){ alert("El archivo no parece tener datos."); return; }
         var cabecera = parseCsvLine(lineas[0]);
         var etiquetaACampo = {};
@@ -639,13 +870,14 @@
           var valores = parseCsvLine(lineas[i]);
           var registro = {};
           cabecera.forEach(function(etq, idx){
-                        var campo = etiquetaACampo[etq.trim()];
+            var campo = etiquetaACampo[etq.trim()];
             if(campo) registro[campo] = valores[idx] || "";
           });
           if(registro.fecha || registro.parcela){
             var fila = {};
             campos.forEach(function(c){ fila[campoAColumna[c]] = (registro[c] === "" ? null : registro[c]); });
             fila.organizacion_id = organizacionId;
+            fila.campana_id = campanaActualId;
             fila.creado_por = userRes.data.user.id;
             nuevos.push(fila);
           }
@@ -669,29 +901,510 @@
   });
 
   // ---------------------------------------------------------------------
+  // CAMPAÑAS
+  // ---------------------------------------------------------------------
+  var selectCampana = document.getElementById("select-campana");
+
+  async function cargarCampanas(){
+    try{
+      var r = await sb.from("campanas").select("*").order("creado_en", { ascending: false });
+      if(r.error) throw r.error;
+      campanasData = r.data || [];
+      if(campanasData.length === 0){
+        var anoActual = String(new Date().getFullYear());
+        var userRes = await sb.auth.getUser();
+        var r2 = await sb.from("campanas").insert({
+          nombre: anoActual,
+          organizacion_id: organizacionId,
+          creado_por: userRes.data.user.id
+        }).select();
+        if(r2.error) throw r2.error;
+        campanasData = r2.data || [];
+      }
+      renderSelectCampana();
+      if(!campanaActualId || !campanasData.some(function(c){ return c.id === campanaActualId; })){
+        campanaActualId = campanasData[0] ? campanasData[0].id : null;
+        selectCampana.value = campanaActualId || "";
+      }
+    }catch(err){
+      console.error(err);
+      alert("No se pudieron cargar las campañas: " + (err.message || err));
+    }
+  }
+
+  function renderSelectCampana(){
+    selectCampana.innerHTML = "";
+    campanasData.forEach(function(c){
+      var opt = document.createElement("option");
+      opt.value = c.id;
+      opt.textContent = c.nombre;
+      selectCampana.appendChild(opt);
+    });
+    if(campanaActualId) selectCampana.value = campanaActualId;
+  }
+
+  selectCampana.addEventListener("change", async function(){
+    campanaActualId = selectCampana.value;
+    await cargarDatos();
+    await cargarTratamientos();
+  });
+
+  document.getElementById("btn-nueva-campana").addEventListener("click", async function(){
+    var nombre = prompt("Nombre de la nueva campaña (ej. " + (new Date().getFullYear() + 1) + "):");
+    if(!nombre) return;
+    nombre = nombre.trim();
+    if(!nombre) return;
+    try{
+      var userRes = await sb.auth.getUser();
+      var r = await sb.from("campanas").insert({
+        nombre: nombre,
+        organizacion_id: organizacionId,
+        creado_por: userRes.data.user.id
+      }).select();
+      if(r.error) throw r.error;
+      campanasData.unshift(r.data[0]);
+      campanaActualId = r.data[0].id;
+      renderSelectCampana();
+      await cargarDatos();
+      await cargarTratamientos();
+    }catch(err){
+      alert("No se pudo crear la campaña: " + (err.message || err));
+    }
+  });
+
+  // ---------------------------------------------------------------------
+  // PARCELAS (inventario, no depende de la campaña)
+  // ---------------------------------------------------------------------
+  var tbodyParcelas = document.getElementById("tbody-parcelas");
+  var emptyParcelas = document.getElementById("empty-parcelas");
+  var contadorParcelas = document.getElementById("contador-parcelas");
+  var formParcela = document.getElementById("form-parcela");
+  var btnGuardarParcela = document.getElementById("btn-guardar-parcela");
+  var btnCancelarParcela = document.getElementById("btn-cancelar-parcela");
+
+  async function cargarParcelas(){
+    contadorParcelas.textContent = "Cargando…";
+    try{
+      var r = await sb.from("parcelas").select("*").order("nombre", { ascending: true });
+      if(r.error) throw r.error;
+      parcelasData = r.data || [];
+      renderParcelas();
+      poblarSelectParcelaTratamiento();
+    }catch(err){
+      console.error(err);
+      contadorParcelas.textContent = "⚠ No se pudo cargar";
+    }
+  }
+
+  document.getElementById("btn-refrescar-parcelas").addEventListener("click", cargarParcelas);
+
+  function costeTotalParcela(parcelaId){
+    var total = 0;
+    tratamientosData.forEach(function(t){
+      if(t.parcela_id === parcelaId && t.coste){ total += Number(t.coste); }
+    });
+    return total;
+  }
+
+  function renderParcelas(){
+    tbodyParcelas.innerHTML = "";
+    emptyParcelas.style.display = parcelasData.length === 0 ? "block" : "none";
+    parcelasData.forEach(function(p){
+      var tr = document.createElement("tr");
+      tr.innerHTML =
+        "<td>" + escapeHtml(p.poligono) + "</td>" +
+        "<td>" + escapeHtml(p.recinto) + "</td>" +
+        "<td>" + escapeHtml(p.nombre) + "</td>" +
+        "<td>" + escapeHtml(p.variedad) + "</td>" +
+        "<td>" + (p.eco ? "Sí" : "No") + "</td>" +
+        "<td>" + escapeHtml(p.extension_ha) + "</td>" +
+        "<td>" + escapeHtml(p.numero_cepas) + "</td>" +
+        "<td>" + escapeHtml(p.numero_filas) + "</td>" +
+        "<td>" + costeTotalParcela(p.id).toFixed(2) + "</td>" +
+        "<td title=\"" + escapeHtml(p.observaciones) + "\">" + escapeHtml((p.observaciones||"").slice(0,20)) + ((p.observaciones||"").length>20?"…":"") + "</td>" +
+        "<td class=\"row-actions\">" +
+          "<button type=\"button\" class=\"btn-ghost\" data-editar-parcela=\"" + p.id + "\">✎</button>" +
+          "<button type=\"button\" class=\"btn-ghost\" data-borrar-parcela=\"" + p.id + "\">🗑</button>" +
+        "</td>";
+      tbodyParcelas.appendChild(tr);
+    });
+    contadorParcelas.textContent = parcelasData.length + (parcelasData.length === 1 ? " parcela registrada" : " parcelas registradas");
+  }
+
+  function limpiarFormularioParcela(){
+    formParcela.reset();
+    document.getElementById("p-eco").value = "no";
+    editandoParcelaId = null;
+    btnCancelarParcela.style.display = "none";
+    btnGuardarParcela.textContent = "＋ Añadir parcela";
+  }
+
+  formParcela.addEventListener("submit", async function(ev){
+    ev.preventDefault();
+    var nombre = document.getElementById("p-nombre").value.trim();
+    if(!nombre){ alert("Por favor, ponle un nombre a la parcela."); return; }
+    var fila = {
+      poligono: document.getElementById("p-poligono").value.trim() || null,
+      recinto: document.getElementById("p-recinto").value.trim() || null,
+      nombre: nombre,
+      variedad: document.getElementById("p-variedad").value.trim() || null,
+      eco: document.getElementById("p-eco").value === "si",
+      extension_ha: document.getElementById("p-extension").value || null,
+      numero_cepas: document.getElementById("p-cepas").value || null,
+      numero_filas: document.getElementById("p-filas").value || null,
+      observaciones: document.getElementById("p-observaciones").value.trim() || null,
+      organizacion_id: organizacionId
+    };
+    try{
+      if(editandoParcelaId){
+        var r = await sb.from("parcelas").update(fila).eq("id", editandoParcelaId);
+        if(r.error) throw r.error;
+      } else {
+        var userRes = await sb.auth.getUser();
+        fila.creado_por = userRes.data.user.id;
+        var r2 = await sb.from("parcelas").insert(fila);
+        if(r2.error) throw r2.error;
+      }
+      limpiarFormularioParcela();
+      await cargarParcelas();
+    }catch(err){
+      console.error(err);
+      alert("No se pudo guardar la parcela: " + (err.message || err));
+    }
+  });
+
+  btnCancelarParcela.addEventListener("click", limpiarFormularioParcela);
+
+  tbodyParcelas.addEventListener("click", async function(ev){
+    var editId = ev.target.getAttribute("data-editar-parcela");
+    var delId = ev.target.getAttribute("data-borrar-parcela");
+    if(editId){
+      var p = parcelasData.find(function(x){ return x.id === editId; });
+      if(p){
+        document.getElementById("p-poligono").value = p.poligono || "";
+        document.getElementById("p-recinto").value = p.recinto || "";
+        document.getElementById("p-nombre").value = p.nombre || "";
+        document.getElementById("p-variedad").value = p.variedad || "";
+        document.getElementById("p-eco").value = p.eco ? "si" : "no";
+        document.getElementById("p-extension").value = p.extension_ha || "";
+        document.getElementById("p-cepas").value = p.numero_cepas || "";
+        document.getElementById("p-filas").value = p.numero_filas || "";
+        document.getElementById("p-observaciones").value = p.observaciones || "";
+        editandoParcelaId = editId;
+        btnCancelarParcela.style.display = "inline-block";
+        btnGuardarParcela.textContent = "✓ Guardar cambios";
+        window.scrollTo({top:0, behavior:"smooth"});
+      }
+    }
+    if(delId){
+      if(confirm("¿Borrar esta parcela? También se perderá su historial de tratamientos asociado. Esta acción no se puede deshacer.")){
+        try{
+          var r = await sb.from("parcelas").delete().eq("id", delId);
+          if(r.error) throw r.error;
+          await cargarParcelas();
+          await cargarTratamientos();
+        }catch(err){
+          alert("No se pudo borrar la parcela: " + (err.message || err));
+        }
+      }
+    }
+  });
+
+  // ---------------------------------------------------------------------
+  // DEPÓSITOS (inventario de bodega, no depende de la campaña)
+  // ---------------------------------------------------------------------
+  var tbodyDepositos = document.getElementById("tbody-depositos");
+  var emptyDepositos = document.getElementById("empty-depositos");
+  var contadorDepositos = document.getElementById("contador-depositos");
+  var formDeposito = document.getElementById("form-deposito");
+  var btnGuardarDeposito = document.getElementById("btn-guardar-deposito");
+  var btnCancelarDeposito = document.getElementById("btn-cancelar-deposito");
+
+  async function cargarDepositos(){
+    contadorDepositos.textContent = "Cargando…";
+    try{
+      var r = await sb.from("depositos").select("*").order("nombre", { ascending: true });
+      if(r.error) throw r.error;
+      depositosData = r.data || [];
+      renderDepositos();
+    }catch(err){
+      console.error(err);
+      contadorDepositos.textContent = "⚠ No se pudo cargar";
+    }
+  }
+
+  document.getElementById("btn-refrescar-depositos").addEventListener("click", cargarDepositos);
+
+  function renderDepositos(){
+    tbodyDepositos.innerHTML = "";
+    emptyDepositos.style.display = depositosData.length === 0 ? "block" : "none";
+    depositosData.forEach(function(d){
+      var tr = document.createElement("tr");
+      tr.innerHTML =
+        "<td>" + escapeHtml(d.nombre) + "</td>" +
+        "<td>" + escapeHtml(d.tipo) + "</td>" +
+        "<td>" + escapeHtml(d.capacidad_litros) + "</td>" +
+        "<td>" + escapeHtml(d.ubicacion) + "</td>" +
+        "<td title=\"" + escapeHtml(d.observaciones) + "\">" + escapeHtml((d.observaciones||"").slice(0,20)) + ((d.observaciones||"").length>20?"…":"") + "</td>" +
+        "<td class=\"row-actions\">" +
+          "<button type=\"button\" class=\"btn-ghost\" data-editar-deposito=\"" + d.id + "\">✎</button>" +
+          "<button type=\"button\" class=\"btn-ghost\" data-borrar-deposito=\"" + d.id + "\">🗑</button>" +
+        "</td>";
+      tbodyDepositos.appendChild(tr);
+    });
+    contadorDepositos.textContent = depositosData.length + (depositosData.length === 1 ? " depósito registrado" : " depósitos registrados");
+  }
+
+  function limpiarFormularioDeposito(){
+    formDeposito.reset();
+    editandoDepositoId = null;
+    btnCancelarDeposito.style.display = "none";
+    btnGuardarDeposito.textContent = "＋ Añadir depósito";
+  }
+
+  formDeposito.addEventListener("submit", async function(ev){
+    ev.preventDefault();
+    var nombre = document.getElementById("dp-nombre").value.trim();
+    if(!nombre){ alert("Por favor, ponle un nombre al depósito."); return; }
+    var fila = {
+      nombre: nombre,
+      tipo: document.getElementById("dp-tipo").value,
+      capacidad_litros: document.getElementById("dp-capacidad").value || null,
+      ubicacion: document.getElementById("dp-ubicacion").value.trim() || null,
+      observaciones: document.getElementById("dp-observaciones").value.trim() || null,
+      organizacion_id: organizacionId
+    };
+    try{
+      if(editandoDepositoId){
+        var r = await sb.from("depositos").update(fila).eq("id", editandoDepositoId);
+        if(r.error) throw r.error;
+      } else {
+        var userRes = await sb.auth.getUser();
+        fila.creado_por = userRes.data.user.id;
+        var r2 = await sb.from("depositos").insert(fila);
+        if(r2.error) throw r2.error;
+      }
+      limpiarFormularioDeposito();
+      await cargarDepositos();
+    }catch(err){
+      console.error(err);
+      alert("No se pudo guardar el depósito: " + (err.message || err));
+    }
+  });
+
+  btnCancelarDeposito.addEventListener("click", limpiarFormularioDeposito);
+
+  tbodyDepositos.addEventListener("click", async function(ev){
+    var editId = ev.target.getAttribute("data-editar-deposito");
+    var delId = ev.target.getAttribute("data-borrar-deposito");
+    if(editId){
+      var d = depositosData.find(function(x){ return x.id === editId; });
+      if(d){
+        document.getElementById("dp-nombre").value = d.nombre || "";
+        document.getElementById("dp-tipo").value = d.tipo || "Acero inoxidable";
+        document.getElementById("dp-capacidad").value = d.capacidad_litros || "";
+        document.getElementById("dp-ubicacion").value = d.ubicacion || "";
+        document.getElementById("dp-observaciones").value = d.observaciones || "";
+        editandoDepositoId = editId;
+        btnCancelarDeposito.style.display = "inline-block";
+        btnGuardarDeposito.textContent = "✓ Guardar cambios";
+        window.scrollTo({top:0, behavior:"smooth"});
+      }
+    }
+    if(delId){
+      if(confirm("¿Borrar este depósito? Esta acción no se puede deshacer.")){
+        try{
+          var r = await sb.from("depositos").delete().eq("id", delId);
+          if(r.error) throw r.error;
+          await cargarDepositos();
+        }catch(err){
+          alert("No se pudo borrar el depósito: " + (err.message || err));
+        }
+      }
+    }
+  });
+
+  // ---------------------------------------------------------------------
+  // TRATAMIENTOS Y COSTES (por parcela, dentro de la campaña activa)
+  // ---------------------------------------------------------------------
+  var tbodyTratamientos = document.getElementById("tbody-tratamientos");
+  var emptyTratamientos = document.getElementById("empty-tratamientos");
+  var contadorTratamientos = document.getElementById("contador-tratamientos");
+  var resumenCostes = document.getElementById("resumen-costes");
+  var formTratamiento = document.getElementById("form-tratamiento");
+  var btnGuardarTratamiento = document.getElementById("btn-guardar-tratamiento");
+  var btnCancelarTratamiento = document.getElementById("btn-cancelar-tratamiento");
+  var selectParcelaTratamiento = document.getElementById("t-parcela");
+
+  function poblarSelectParcelaTratamiento(){
+    var valorActual = selectParcelaTratamiento.value;
+    selectParcelaTratamiento.innerHTML = "";
+    if(parcelasData.length === 0){
+      var opt = document.createElement("option");
+      opt.value = "";
+      opt.textContent = "Añade antes una parcela";
+      selectParcelaTratamiento.appendChild(opt);
+      return;
+    }
+    parcelasData.forEach(function(p){
+      var opt = document.createElement("option");
+      opt.value = p.id;
+      var ref = [p.poligono, p.recinto].filter(Boolean).join("/");
+      opt.textContent = p.nombre + (ref ? " (" + ref + ")" : "");
+      selectParcelaTratamiento.appendChild(opt);
+    });
+    if(valorActual) selectParcelaTratamiento.value = valorActual;
+  }
+
+  async function cargarTratamientos(){
+    contadorTratamientos.textContent = "Cargando…";
+    try{
+      var q = sb.from("tratamientos").select("*").order("fecha", { ascending: false });
+      if(campanaActualId) q = q.eq("campana_id", campanaActualId);
+      var r = await q;
+      if(r.error) throw r.error;
+      tratamientosData = r.data || [];
+      renderTratamientos();
+      renderParcelas();
+    }catch(err){
+      console.error(err);
+      contadorTratamientos.textContent = "⚠ No se pudo cargar";
+    }
+  }
+
+  document.getElementById("btn-refrescar-tratamientos").addEventListener("click", cargarTratamientos);
+
+  function nombreParcela(parcelaId){
+    var p = parcelasData.find(function(x){ return x.id === parcelaId; });
+    return p ? p.nombre : "(parcela eliminada)";
+  }
+
+  function renderTratamientos(){
+    tbodyTratamientos.innerHTML = "";
+    emptyTratamientos.style.display = tratamientosData.length === 0 ? "block" : "none";
+    var total = 0;
+    tratamientosData.forEach(function(t){
+      if(t.coste) total += Number(t.coste);
+      var tr = document.createElement("tr");
+      tr.innerHTML =
+        "<td>" + escapeHtml(t.fecha) + "</td>" +
+        "<td>" + escapeHtml(nombreParcela(t.parcela_id)) + "</td>" +
+        "<td>" + escapeHtml(t.tipo) + "</td>" +
+        "<td>" + escapeHtml(t.producto) + "</td>" +
+        "<td>" + (t.coste ? Number(t.coste).toFixed(2) : "") + "</td>" +
+        "<td>" + escapeHtml(t.responsable) + "</td>" +
+        "<td title=\"" + escapeHtml(t.observaciones) + "\">" + escapeHtml((t.observaciones||"").slice(0,20)) + ((t.observaciones||"").length>20?"…":"") + "</td>" +
+        "<td class=\"row-actions\">" +
+          "<button type=\"button\" class=\"btn-ghost\" data-editar-tratamiento=\"" + t.id + "\">✎</button>" +
+          "<button type=\"button\" class=\"btn-ghost\" data-borrar-tratamiento=\"" + t.id + "\">🗑</button>" +
+        "</td>";
+      tbodyTratamientos.appendChild(tr);
+    });
+    contadorTratamientos.textContent = tratamientosData.length + (tratamientosData.length === 1 ? " tratamiento registrado" : " tratamientos registrados");
+    resumenCostes.textContent = "Coste total acumulado en esta campaña: " + total.toFixed(2) + " €";
+  }
+
+  function limpiarFormularioTratamiento(){
+    formTratamiento.reset();
+    document.getElementById("t-fecha").value = new Date().toISOString().slice(0,10);
+    editandoTratamientoId = null;
+    btnCancelarTratamiento.style.display = "none";
+    btnGuardarTratamiento.textContent = "＋ Añadir tratamiento";
+  }
+
+  formTratamiento.addEventListener("submit", async function(ev){
+    ev.preventDefault();
+    var parcelaId = selectParcelaTratamiento.value;
+    var fecha = document.getElementById("t-fecha").value;
+    if(!parcelaId){ alert("Añade primero una parcela en la pestaña Parcelas."); return; }
+    if(!fecha){ alert("Por favor, indica la fecha."); return; }
+    var fila = {
+      parcela_id: parcelaId,
+      fecha: fecha,
+      tipo: document.getElementById("t-tipo").value,
+      producto: document.getElementById("t-producto").value.trim() || null,
+      coste: document.getElementById("t-coste").value || null,
+      responsable: document.getElementById("t-responsable").value.trim() || null,
+      observaciones: document.getElementById("t-observaciones").value.trim() || null,
+      organizacion_id: organizacionId
+    };
+    if(!editandoTratamientoId) fila.campana_id = campanaActualId;
+    try{
+      if(editandoTratamientoId){
+        var r = await sb.from("tratamientos").update(fila).eq("id", editandoTratamientoId);
+        if(r.error) throw r.error;
+      } else {
+        var userRes = await sb.auth.getUser();
+        fila.creado_por = userRes.data.user.id;
+        var r2 = await sb.from("tratamientos").insert(fila);
+        if(r2.error) throw r2.error;
+      }
+      limpiarFormularioTratamiento();
+      await cargarTratamientos();
+    }catch(err){
+      console.error(err);
+      alert("No se pudo guardar el tratamiento: " + (err.message || err));
+    }
+  });
+
+  btnCancelarTratamiento.addEventListener("click", limpiarFormularioTratamiento);
+
+  tbodyTratamientos.addEventListener("click", async function(ev){
+    var editId = ev.target.getAttribute("data-editar-tratamiento");
+    var delId = ev.target.getAttribute("data-borrar-tratamiento");
+    if(editId){
+      var t = tratamientosData.find(function(x){ return x.id === editId; });
+      if(t){
+        selectParcelaTratamiento.value = t.parcela_id;
+        document.getElementById("t-fecha").value = t.fecha;
+        document.getElementById("t-tipo").value = t.tipo;
+        document.getElementById("t-producto").value = t.producto || "";
+        document.getElementById("t-coste").value = t.coste || "";
+        document.getElementById("t-responsable").value = t.responsable || "";
+        document.getElementById("t-observaciones").value = t.observaciones || "";
+        editandoTratamientoId = editId;
+        btnCancelarTratamiento.style.display = "inline-block";
+        btnGuardarTratamiento.textContent = "✓ Guardar cambios";
+        window.scrollTo({top:0, behavior:"smooth"});
+      }
+    }
+    if(delId){
+      if(confirm("¿Borrar este tratamiento? Esta acción no se puede deshacer.")){
+        try{
+          var r = await sb.from("tratamientos").delete().eq("id", delId);
+          if(r.error) throw r.error;
+          await cargarTratamientos();
+        }catch(err){
+          alert("No se pudo borrar: " + (err.message || err));
+        }
+      }
+    }
+  });
+
+  // ---------------------------------------------------------------------
   // ARRANQUE
   // ---------------------------------------------------------------------
   document.getElementById("fecha") && (document.getElementById("fecha").value = new Date().toISOString().slice(0,10));
+  document.getElementById("t-fecha") && (document.getElementById("t-fecha").value = new Date().toISOString().slice(0,10));
 
   sb.auth.onAuthStateChange(function(event, session){
-        if(session && session.user){
+    if(session && session.user){
       iniciarSesionCompleta();
-        } else {
+    } else {
       mostrarSolo(pantallaAuth);
-        }
+    }
   });
 
   sb.auth.getSession().then(function(r){
-        if(r.data && r.data.session){
+    if(r.data && r.data.session){
       iniciarSesionCompleta();
-        } else {
+    } else {
       mostrarSolo(pantallaAuth);
-        }
+    }
   });
 
-  })();
+})();
 </script>
 
-  </body>
-  </html>
-  
+</body>
+</html>
