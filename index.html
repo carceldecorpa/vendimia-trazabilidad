@@ -66,9 +66,6 @@
     font-size:.75rem;
     cursor:pointer;
   }
-  .roadmap{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;}
-  .pill{font-size:.72rem;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);}
-  .pill.activa{background:#fff;color:var(--vino-dark);font-weight:700;border-color:#fff;}
   .wrap{max-width:900px;margin:0 auto;padding:0 16px;}
   .card{background:var(--card);border:1px solid var(--borde);border-radius:14px;padding:20px;margin-top:20px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
   .card h2{margin:0 0 14px;font-size:1.05rem;color:var(--vino-dark);}
@@ -125,9 +122,17 @@
   .campana-bar label{margin:0;white-space:nowrap;}
   .campana-bar select{width:auto;min-width:140px;}
   .campana-bar button{white-space:nowrap;}
-  .main-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+  .campana-bar.campana-raiz{background:var(--vino-light);border-color:var(--vino);}
+  .campana-raiz-texto{display:flex;flex-direction:column;gap:2px;margin-right:auto;}
+  .campana-raiz-texto strong{color:var(--vino-dark);font-size:.95rem;}
+  .campana-raiz-texto span{font-size:.78rem;color:var(--texto-suave);}
+  .grupo-tabs{margin-top:24px;}
+  .grupo-tabs-titulo{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--texto-suave);margin-bottom:8px;}
+  .grupo-tabs-titulo span{text-transform:none;font-weight:400;letter-spacing:0;}
+  .main-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:0;}
   .main-tabs button{background:#fff;color:var(--texto-suave);border-color:var(--borde);}
   .main-tabs button.activo{background:var(--vino);color:#fff;border-color:var(--vino);}
+  .tab-btn-proximo{background:#fff;color:var(--texto-suave);border:1px dashed var(--borde);opacity:.55;cursor:not-allowed;}
   .oculto{display:none !important;}
   @media (max-width:600px){header h1{font-size:1.2rem;}.card{padding:16px;}}
 </style>
@@ -187,30 +192,39 @@
           <button type="button" id="btn-logout">Salir</button>
         </div>
       </div>
-      <div class="roadmap">
-        <span class="pill activa">1. Control previo</span>
-        <span class="pill activa">2. Vendimia</span>
-        <span class="pill">3. Bodega / Fermentación</span>
-        <span class="pill">4. Análisis químicos</span>
-        <span class="pill">5. Venta / Trazabilidad</span>
-      </div>
     </div>
   </header>
 
   <div class="wrap">
 
-    <div class="campana-bar">
+    <div class="campana-bar campana-raiz">
+      <div class="campana-raiz-texto">
+        <strong>📅 Campaña de trabajo</strong>
+        <span>Elige primero la campaña — todo lo que registres abajo (tratamientos, maduración, vendimia…) queda guardado dentro de ella.</span>
+      </div>
       <label for="select-campana">Campaña</label>
       <select id="select-campana"></select>
       <button type="button" class="btn-secondary" id="btn-nueva-campana">+ Nueva campaña</button>
     </div>
 
-    <div class="main-tabs">
-      <button type="button" class="tab-btn" data-tab="parcelas">🗺️ Parcelas</button>
-      <button type="button" class="tab-btn" data-tab="depositos">🛢️ Depósitos</button>
-      <button type="button" class="tab-btn" data-tab="tratamientos">🧪 Tratamientos y costes</button>
-      <button type="button" class="tab-btn activo" data-tab="maduracion">🍇 Maduración</button>
-      <button type="button" class="tab-btn" data-tab="vendimia">🧺 Vendimia</button>
+    <div class="grupo-tabs">
+      <div class="grupo-tabs-titulo">📚 Base de datos <span>— datos fijos de tu bodega; no dependen de la campaña, y de aquí salen los desplegables de Parcela y Depósito de los módulos de abajo</span></div>
+      <div class="main-tabs">
+        <button type="button" class="tab-btn" data-tab="parcelas">🗺️ Parcelas</button>
+        <button type="button" class="tab-btn" data-tab="depositos">🛢️ Depósitos</button>
+      </div>
+    </div>
+
+    <div class="grupo-tabs">
+      <div class="grupo-tabs-titulo">📋 Registro de la vendimia <span>— por campaña</span></div>
+      <div class="main-tabs">
+        <button type="button" class="tab-btn" data-tab="tratamientos">🧪 Tratamientos y costes</button>
+        <button type="button" class="tab-btn activo" data-tab="maduracion">🍇 Control previo (maduración)</button>
+        <button type="button" class="tab-btn" data-tab="vendimia">🧺 Vendimia</button>
+        <button type="button" class="tab-btn-proximo" title="Próximamente" disabled>🛢️ Bodega / Fermentación</button>
+        <button type="button" class="tab-btn-proximo" title="Próximamente" disabled>🧪 Análisis químicos</button>
+        <button type="button" class="tab-btn-proximo" title="Próximamente" disabled>🏷️ Venta / Trazabilidad</button>
+      </div>
     </div>
 
     <div id="seccion-parcelas" class="oculto">
